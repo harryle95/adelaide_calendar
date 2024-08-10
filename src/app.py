@@ -33,7 +33,7 @@ from tzlocal import get_localzone_name
 # This is path to OAuth json creds. Must be a webserver type and not desktop
 CLIENT_SECRETS_FILE = ".creds/server_secret.json"
 # Calendar scope - we want to be able to read and write to calendars
-SCOPES = ["https://www.googleapis.com/auth/calendar.events", "https://www.googleapis.com/auth/drive.metadata.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 API_SERVICE_NAME = "calendar"
 API_VERSION = "v3"
 
