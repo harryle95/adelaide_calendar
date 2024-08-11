@@ -60,8 +60,8 @@ class ResponseParser:
             raise Exception("Server response with unsuccessful query")
 
         # Extract query data
-        data: dict[str, Any] = body.get("data", dict())
-        self.query: dict[str, Any] = data.get("query", dict())
+        data: dict[str, Any] = body.get("data", {})
+        self.query: dict[str, Any] = data.get("query", {})
         rows = self.query.get("rows", [])
         self.rows = []
         for row in rows:
@@ -96,7 +96,7 @@ class Paginator:
     def __next__(self) -> ResponseParser:
         if self._has_next:
             self.params.set("page_number", self.page_number)
-            raw_response = requests.get(self.end_point, params=self.params.params)
+            raw_response = requests.get(self.end_point, params=self.params.params)  # noqa: S113
             response = ResponseParser(raw_response, self.dto)
             self.page_number += 1
             if (
@@ -105,5 +105,4 @@ class Paginator:
             ):
                 self._has_next = False
             return response
-        else:
-            raise StopIteration
+        raise StopIteration

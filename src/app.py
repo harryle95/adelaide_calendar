@@ -398,7 +398,7 @@ async def revoke(request: Request[User, MutableMapping[str, Any], Any]) -> None:
     auth = {k: v for k, v in request.auth["creds"].items() if k != "user_email"}
     credentials = google.oauth2.credentials.Credentials(**auth)  # type: ignore[no-untyped-call]
 
-    revoke = requests.post(
+    revoke = requests.post(  # noqa: S113
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
         headers={"content-type": "application/x-www-form-urlencoded"},

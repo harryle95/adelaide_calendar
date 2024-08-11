@@ -26,7 +26,7 @@ YEAR = 2024
 class Query:
     @staticmethod
     def query(param_builder: ParamsBuilder, response_dto: Any) -> Any:
-        raw_response = requests.get(url=API_END_POINT, params=param_builder.params)
+        raw_response = requests.get(url=API_END_POINT, params=param_builder.params)  # noqa: S113
         return ResponseParser(raw_response, response_dto).rows
 
     @staticmethod
