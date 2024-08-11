@@ -381,10 +381,10 @@ async def oauth2callback(request: Request[User, Any, Any]) -> Redirect:
         user_email=request.user.email,
         token=credentials.token,
         refresh_token=credentials.refresh_token,
-        token_uri=credentials.token_uri,  # type: ignore
+        token_uri=credentials.token_uri,  # type: ignore[reportArgumentType]
         client_id=credentials.client_id,
         client_secret=credentials.client_secret,
-        scopes=credentials.scopes,  # type: ignore
+        scopes=credentials.scopes,  # type: ignore[reportArgumentType]
     )
     MOCK_OAUTH_DB[request.user.email] = oauth_creds
     MOCK_USER_DB[request.user.email].is_authorised = True
