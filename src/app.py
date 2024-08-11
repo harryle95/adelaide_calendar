@@ -330,20 +330,15 @@ async def authorise(request: Request[User, Any, Any], state: State) -> Redirect:
         include_granted_scopes="true",
     )
 
-    # Store the state so the callback can verify the auth server response.
-    state["authorization_state"] = authorization_state
-
     return Redirect(authorization_url)
 
 
-@get("/oauth2callback")
-async def oauth2callback(state: State, request: Request[User, Any, Any]) -> Redirect:
+@get("/oauth2callback", exclude_from_auth=False)
+async def oauth2callback(request: Request[User, Any, Any]) -> Redirect:
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
-    authorization_state = state.authorization_state
-
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=authorization_state
+        CLIENT_SECRETS_FILE, scopes=SCOPES, state=request.url.query_params["state"]
     )
     flow.redirect_uri = "http://localhost:8080/oauth2callback"
 
