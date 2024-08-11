@@ -10,6 +10,9 @@ import requests
 from . import dto
 from .helpers import Paginator, ParamsBuilder, ResponseParser
 
+__all__ = ("Query",)
+
+
 COURSE_SEARCH_TARGET = "/system/COURSE_SEARCH/queryx"
 CAMPUS_TARGET = "/system/CAMPUS/queryx"
 CSP_ACAD_CAREER_TARGET = "/system/CSP_ACAD_CAREER/queryx"
