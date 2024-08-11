@@ -38,7 +38,6 @@ class UserController(Controller):
         summary="List Users",
         description="Retrieve the users.",
         path=UserURL.LIST.value,
-        cache=60,
     )
     async def list_users(
         self,
