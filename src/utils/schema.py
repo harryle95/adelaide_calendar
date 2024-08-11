@@ -2,6 +2,8 @@ from typing import Any
 
 import msgspec
 
+__all__ = ("BaseStruct", "CamelizedBaseStruct", "Message", )
+
 
 class BaseStruct(msgspec.Struct):
     def to_dict(self) -> dict[str, Any]:

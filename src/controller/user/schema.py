@@ -4,6 +4,8 @@ import msgspec
 
 from src.utils.schema import CamelizedBaseStruct
 
+__all__ = ("AccountLogin", "User", "UserCreate", "UserUpdate", )
+
 
 class User(CamelizedBaseStruct):
     id: UUID

@@ -4,6 +4,8 @@ from advanced_alchemy.base import UUIDAuditBase
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
+__all__ = ("User", )
+
 
 class User(UUIDAuditBase):
     __tablename__ = "user_account"
