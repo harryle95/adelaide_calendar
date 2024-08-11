@@ -9,11 +9,11 @@ from litestar.config.compression import CompressionConfig
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 
-from src.config.base import get_settings
+from src.config.base import Settings
 
 __all__ = ("compression", "csrf", "cors", "alchemy", "settings")
 
-settings = get_settings()
+settings = Settings()
 
 compression = CompressionConfig(backend="gzip")
 
