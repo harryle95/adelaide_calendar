@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 from uuid import UUID
 
 from advanced_alchemy.filters import (
@@ -15,9 +15,12 @@ from advanced_alchemy.filters import (
     SearchFilter,
 )
 from litestar.di import Provide
-from litestar.params import Dependency, Parameter
 
-from src.config import constants
+from src.config import constants  # noqa: TCH001
+
+if TYPE_CHECKING:
+    from litestar.params import Dependency, Parameter
+
 
 __all__ = [
     "create_collection_dependencies",
@@ -52,7 +55,7 @@ SEARCH_FILTER_DEPENDENCY_KEY = "search_filter"
 
 
 def provide_id_filter(
-    ids: list[UUID] | None = Parameter(query="ids", default=None, required=False),
+    ids: Annotated[list[UUID] | None, Parameter(query="ids", default=None, required=False)],
 ) -> CollectionFilter[UUID]:
     """Return type consumed by ``Repository.filter_in_collection()``.
 
@@ -66,8 +69,8 @@ def provide_id_filter(
 
 
 def provide_created_filter(
-    before: DTorNone = Parameter(query="createdBefore", default=None, required=False),
-    after: DTorNone = Parameter(query="createdAfter", default=None, required=False),
+    before: Annotated[DTorNone, Parameter(query="createdBefore", default=None, required=False)],
+    after: Annotated[DTorNone, Parameter(query="createdAfter", default=None, required=False)],
 ) -> BeforeAfter:
     """Return type consumed by `Repository.filter_on_datetime_field()`.
 
@@ -82,14 +85,21 @@ def provide_created_filter(
 
 
 def provide_search_filter(
-    field: StringOrNone = Parameter(title="Field to search", query="searchField", default=None, required=False),
-    search: StringOrNone = Parameter(title="Field to search", query="searchString", default=None, required=False),
-    ignore_case: BooleanOrNone = Parameter(
-        title="Search should be case sensitive",
-        query="searchIgnoreCase",
-        default=None,
-        required=False,
-    ),
+    field: Annotated[
+        StringOrNone, Parameter(title="Field to search", query="searchField", default=None, required=False)
+    ],
+    search: Annotated[
+        StringOrNone, Parameter(title="Field to search", query="searchString", default=None, required=False)
+    ],
+    ignore_case: Annotated[
+        BooleanOrNone,
+        Parameter(
+            title="Search should be case sensitive",
+            query="searchIgnoreCase",
+            default=None,
+            required=False,
+        ),
+    ],
 ) -> SearchFilter:
     """Add offset/limit pagination.
 
@@ -107,8 +117,12 @@ def provide_search_filter(
 
 
 def provide_order_by(
-    field_name: StringOrNone = Parameter(title="Order by field", query="orderBy", default=None, required=False),
-    sort_order: SortOrderOrNone = Parameter(title="Field to search", query="sortOrder", default="desc", required=False),
+    field_name: Annotated[
+        StringOrNone, Parameter(title="Order by field", query="orderBy", default=None, required=False)
+    ],
+    sort_order: Annotated[
+        SortOrderOrNone, Parameter(title="Field to search", query="sortOrder", default="desc", required=False)
+    ],
 ) -> OrderBy:
     """Add offset/limit pagination.
 
@@ -125,8 +139,8 @@ def provide_order_by(
 
 
 def provide_updated_filter(
-    before: DTorNone = Parameter(query="updatedBefore", default=None, required=False),
-    after: DTorNone = Parameter(query="updatedAfter", default=None, required=False),
+    before: Annotated[DTorNone, Parameter(query="updatedBefore", default=None, required=False)],
+    after: Annotated[DTorNone, Parameter(query="updatedAfter", default=None, required=False)],
 ) -> BeforeAfter:
     """Add updated filter.
 
@@ -143,13 +157,16 @@ def provide_updated_filter(
 
 
 def provide_limit_offset_pagination(
-    current_page: int = Parameter(ge=1, query="currentPage", default=1, required=False),
-    page_size: int = Parameter(
-        query="pageSize",
-        ge=1,
-        default=constants.DEFAULT_PAGINATION_SIZE,
-        required=False,
-    ),
+    current_page: Annotated[int, Parameter(ge=1, query="currentPage", default=1, required=False)],
+    page_size: Annotated[
+        int,
+        Parameter(
+            query="pageSize",
+            ge=1,
+            default=constants.DEFAULT_PAGINATION_SIZE,
+            required=False,
+        ),
+    ],
 ) -> LimitOffset:
     """Add offset/limit pagination.
 
@@ -166,12 +183,12 @@ def provide_limit_offset_pagination(
 
 
 def provide_filter_dependencies(
-    created_filter: BeforeAfter = Dependency(skip_validation=True),
-    updated_filter: BeforeAfter = Dependency(skip_validation=True),
-    id_filter: CollectionFilter = Dependency(skip_validation=True),
-    limit_offset: LimitOffset = Dependency(skip_validation=True),
-    search_filter: SearchFilter = Dependency(skip_validation=True),
-    order_by: OrderBy = Dependency(skip_validation=True),
+    created_filter: Annotated[BeforeAfter, Dependency(skip_validation=True)],
+    updated_filter: Annotated[BeforeAfter, Dependency(skip_validation=True)],
+    id_filter: Annotated[CollectionFilter, Dependency(skip_validation=True)],
+    limit_offset: Annotated[LimitOffset, Dependency(skip_validation=True)],
+    search_filter: Annotated[SearchFilter, Dependency(skip_validation=True)],
+    order_by: Annotated[OrderBy, Dependency(skip_validation=True)],
 ) -> list[FilterTypes]:
     """Provide common collection route filtering dependencies.
 
