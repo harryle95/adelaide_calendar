@@ -4,7 +4,7 @@ from advanced_alchemy.base import UUIDAuditBase
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-__all__ = ("User", )
+__all__ = ("User",)
 
 
 class User(UUIDAuditBase):

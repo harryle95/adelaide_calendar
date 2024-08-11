@@ -7,7 +7,7 @@ from src.controller.user.repositories import UserRepository
 from src.db.models.user import User
 from src.utils.crypt import hash_plain_text_password, validate_password
 
-__all__ = ("UserService", )
+__all__ = ("UserService",)
 
 
 class UserService(SQLAlchemyAsyncRepositoryService[User]):

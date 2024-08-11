@@ -2,7 +2,11 @@ from typing import Any
 
 import msgspec
 
-__all__ = ("BaseStruct", "CamelizedBaseStruct", "Message", )
+__all__ = (
+    "BaseStruct",
+    "CamelizedBaseStruct",
+    "Message",
+)
 
 
 class BaseStruct(msgspec.Struct):

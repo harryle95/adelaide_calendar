@@ -12,7 +12,7 @@ from src.controller.user.schema import User, UserCreate, UserUpdate
 from src.controller.user.services import UserService
 from src.controller.user.urls import UserURL
 
-__all__ = ("UserController", )
+__all__ = ("UserController",)
 
 
 if TYPE_CHECKING:

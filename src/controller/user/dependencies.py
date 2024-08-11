@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.controller.user.services import UserService
 
-__all__ = ("provide_users_service", )
+__all__ = ("provide_users_service",)
 
 
 async def provide_users_service(db_session: AsyncSession) -> AsyncGenerator[UserService, None]:

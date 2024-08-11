@@ -1,6 +1,9 @@
 from enum import Enum
 
-__all__ = ("AuthURL", "UserURL", )
+__all__ = (
+    "AuthURL",
+    "UserURL",
+)
 
 
 class AuthURL(Enum):
