@@ -30,9 +30,7 @@ class Query:
     def campus() -> Sequence[dto.CampusDTO]:
         return cast(
             Sequence[dto.CampusDTO],
-            Query.query(
-                ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.CampusDTO
-            ),
+            Query.query(ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.CampusDTO),
         )
 
     @staticmethod
