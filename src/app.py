@@ -274,7 +274,7 @@ async def create_event(
     request: Request[User, MutableMapping[str, Any], Any],
 ) -> Redirect:
     auth = {k: v for k, v in request.auth["creds"].items() if k != "user_email"}
-    credentials = google.oauth2.credentials.Credentials(**auth)  # type: ignore[no-untyped-call]
+    credentials = google.oauth2.credentials.Credentials(**auth)
     service = googleapiclient.discovery.build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
     service.events().insert(calendarId="primary", body=data.to_dict()).execute()
     return Redirect("/")
@@ -381,10 +381,10 @@ async def oauth2callback(request: Request[User, Any, Any]) -> Redirect:
         user_email=request.user.email,
         token=credentials.token,
         refresh_token=credentials.refresh_token,
-        token_uri=credentials.token_uri,  # type: ignore[reportArgumentType]
+        token_uri=credentials.token_uri,  # type: ignore[attribute-access]
         client_id=credentials.client_id,
         client_secret=credentials.client_secret,
-        scopes=credentials.scopes,  # type: ignore[reportArgumentType]
+        scopes=credentials.scopes,  # type: ignore[attribute-access]
     )
     MOCK_OAUTH_DB[request.user.email] = oauth_creds
     MOCK_USER_DB[request.user.email].is_authorised = True
@@ -396,7 +396,7 @@ async def oauth2callback(request: Request[User, Any, Any]) -> Redirect:
 @get("/revoke", guards=[validated_user_guard])
 async def revoke(request: Request[User, MutableMapping[str, Any], Any]) -> None:
     auth = {k: v for k, v in request.auth["creds"].items() if k != "user_email"}
-    credentials = google.oauth2.credentials.Credentials(**auth)  # type: ignore[no-untyped-call]
+    credentials = google.oauth2.credentials.Credentials(**auth)
 
     revoke = requests.post(  # noqa: S113
         "https://oauth2.googleapis.com/revoke",
