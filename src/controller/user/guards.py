@@ -10,7 +10,11 @@ from src.config.app import alchemy
 from src.controller.user.dependencies import provide_users_service
 from src.db.models.user import User
 
-__all__ = ("require_superuser", "require_verified_user", "retrieve_user_handler", )
+__all__ = (
+    "require_superuser",
+    "require_verified_user",
+    "retrieve_user_handler",
+)
 
 
 def require_superuser(connection: ASGIConnection[HandlerT, User, AuthT, StateT], _: BaseRouteHandler) -> None:
@@ -26,7 +30,7 @@ def require_verified_user(connection: ASGIConnection[HandlerT, User, AuthT, Stat
 async def retrieve_user_handler(
     session: dict[str, Any], connection: ASGIConnection[HandlerT, UserT, AuthT, StateT]
 ) -> User | None:
-    service = await anext(provide_users_service(alchemy.provide_session(connection.state, connection.scope)))
+    service = await anext(provide_users_service(alchemy.provide_session(connection.app.state, connection.scope)))
     return await service.get_one_or_none(id=session.get("user_id"))
 
 
