@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Any
 
-from litestar import Controller, delete, get, patch, post
+from litestar import Controller, Request, delete, get, patch, post
 from litestar.di import Provide
 
 from src.controller.user.dependencies import provide_users_service
-from src.controller.user.schema import User, UserCreate, UserUpdate
+from src.controller.user.schema import AccountLogin, User, UserCreate, UserUpdate
 from src.controller.user.services import UserService
-from src.controller.user.urls import UserURL
+from src.controller.user.urls import AuthURL, UserURL
 
 __all__ = ("UserController",)
 
@@ -21,6 +21,63 @@ if TYPE_CHECKING:
     from advanced_alchemy.filters import FilterTypes
     from advanced_alchemy.service import OffsetPagination
     from litestar.params import Dependency, Parameter
+
+
+class AuthController(Controller):
+    """Authentication Controller"""
+
+    tags = ["User Authentication"]
+    dependencies = {"users_service": Provide(provide_users_service)}
+    signature_namespace = {"UserService": UserService}
+    dto = None
+    return_dto = None
+
+    @post(
+        operation_id="RegisterUser",
+        name="auth:register",
+        summary="Register User",
+        description="Register the user",
+        path=AuthURL.REGISTER.value,
+        exclude_from_auth=True,
+    )
+    async def register_user(
+        self, users_service: UserService, data: AccountLogin, request: Request[Any, Any, Any]
+    ) -> None:
+        user = await users_service.create(data)
+        request.set_session({"user_id": user.id})
+        return
+
+    @post(
+        operation_id="LoginUser",
+        name="auth:login",
+        summary="Login User",
+        description="Login the user",
+        path=AuthURL.LOGIN.value,
+        exclude_from_auth=True,
+    )
+    async def login_user(
+        self,
+        users_service: UserService,
+        data: AccountLogin,
+        request: Request[Any, Any, Any],
+    ) -> None:
+        user = await users_service.authenticate(data.email, data.password)
+        request.set_session({"user_id": user.id})
+        return
+
+    @get(
+        operation_id="LogoutUser",
+        name="auth:logout",
+        summary="Logout User",
+        description="Logout the user",
+        path=AuthURL.LOGOUT.value,
+    )
+    async def logout_user(
+        self,
+        request: Request[Any, Any, Any],
+    ) -> None:
+        request.clear_session()
+        return
 
 
 class UserController(Controller):

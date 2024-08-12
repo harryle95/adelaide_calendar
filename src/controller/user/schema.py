@@ -37,5 +37,5 @@ class UserUpdate(CamelizedBaseStruct, omit_defaults=True):
 
 
 class AccountLogin(CamelizedBaseStruct):
-    username: str
+    email: str
     password: str

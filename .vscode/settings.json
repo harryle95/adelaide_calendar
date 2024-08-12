@@ -1,4 +1,11 @@
 {
   "python.REPL.enableREPLSmartSend": false,
-  "cSpell.words": ["anext", "asgi", "Litestar", "saqlalchemy", "sqlalchemy"]
+  "cSpell.words": [
+    "anext",
+    "asgi",
+    "Litestar",
+    "msgspec",
+    "saqlalchemy",
+    "sqlalchemy"
+  ]
 }
