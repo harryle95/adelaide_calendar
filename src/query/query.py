@@ -10,6 +10,9 @@ import requests
 from . import dto
 from .helpers import Paginator, ParamsBuilder, ResponseParser
 
+__all__ = ("Query",)
+
+
 COURSE_SEARCH_TARGET = "/system/COURSE_SEARCH/queryx"
 CAMPUS_TARGET = "/system/CAMPUS/queryx"
 CSP_ACAD_CAREER_TARGET = "/system/CSP_ACAD_CAREER/queryx"
@@ -23,16 +26,14 @@ YEAR = 2024
 class Query:
     @staticmethod
     def query(param_builder: ParamsBuilder, response_dto: Any) -> Any:
-        raw_response = requests.get(url=API_END_POINT, params=param_builder.params)
+        raw_response = requests.get(url=API_END_POINT, params=param_builder.params)  # noqa: S113
         return ResponseParser(raw_response, response_dto).rows
 
     @staticmethod
     def campus() -> Sequence[dto.CampusDTO]:
         return cast(
             Sequence[dto.CampusDTO],
-            Query.query(
-                ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.CampusDTO
-            ),
+            Query.query(ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.CampusDTO),
         )
 
     @staticmethod

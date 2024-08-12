@@ -5,7 +5,7 @@
 groups = ["default", "analysis", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:4be0c0bff7897b8ea12895a3a5f9cd953f98db9f2c89689192ee9a0c668cbe9d"
+content_hash = "sha256:b0b9022848e375ac4ba7d57c4c6d631706244aa2889c1e91a9f06e8d32d0df80"
 
 [[package]]
 name = "advanced-alchemy"
@@ -1350,7 +1350,7 @@ name = "types-passlib"
 version = "1.7.7.20240327"
 requires_python = ">=3.8"
 summary = "Typing stubs for passlib"
-groups = ["default"]
+groups = ["analysis"]
 files = [
     {file = "types-passlib-1.7.7.20240327.tar.gz", hash = "sha256:4cce6a1a3a6afee9fc4728b4d9784300764ac2be747f5bcc01646d904b85f4bb"},
     {file = "types_passlib-1.7.7.20240327-py3-none-any.whl", hash = "sha256:3a3b7f4258b71034d2e2f4f307d6810f9904f906cdf375514c8bdbdb28a4ad23"},
@@ -1361,7 +1361,7 @@ name = "types-requests"
 version = "2.32.0.20240712"
 requires_python = ">=3.8"
 summary = "Typing stubs for requests"
-groups = ["default"]
+groups = ["analysis"]
 dependencies = [
     "urllib3>=2",
 ]
@@ -1423,7 +1423,7 @@ name = "urllib3"
 version = "2.2.2"
 requires_python = ">=3.8"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default"]
+groups = ["analysis", "default"]
 files = [
     {file = "urllib3-2.2.2-py3-none-any.whl", hash = "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472"},
     {file = "urllib3-2.2.2.tar.gz", hash = "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"},
