@@ -10,6 +10,8 @@ from src.config.app import alchemy
 from src.controller.user.dependencies import provide_users_service
 from src.db.models.user import User
 
+__all__ = ("require_superuser", "require_verified_user", "retrieve_user_handler", )
+
 
 def require_superuser(connection: ASGIConnection[HandlerT, User, AuthT, StateT], _: BaseRouteHandler) -> None:
     if not connection.user or not connection.user.is_superuser:
