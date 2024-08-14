@@ -1,12 +1,12 @@
-## Setup 
+## Setup
 
 ### Frontend - will require `npm` or other package managers
 
 ```bash
-npm install 
+npm install
 ```
 
-### Backend - will require `make` WSL 
+### Backend - will require `make` WSL
 
 If you don't have `pdm`:
 
@@ -18,15 +18,15 @@ make install-pdm
 make install
 ```
 
-## Run the project 
+## Run the project
 
-### Frontend 
+### Frontend
 
 ```bash
 npm run dev
 ```
 
-### Backend 
+### Backend
 
 ```bash
 make app-dev
