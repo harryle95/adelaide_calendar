@@ -167,7 +167,5 @@ docs-linkcheck-full: 									## Run the full link check on the docs
 # =============================================================================
 .PHONY: app-dev
 app-dev:											## Start the application - debug mode
-	@echo "=>Running setup file"
-	@$(PDM) run python -m src.setup
 	@echo "=>Running application developer mode"
 	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload
