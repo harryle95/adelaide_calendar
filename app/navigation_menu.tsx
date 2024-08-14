@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const menuMap: Record<string, string> = {
   Home: "/",
@@ -9,26 +12,44 @@ const menuMap: Record<string, string> = {
 };
 
 const NavigationMenu = React.memo(() => {
-  const linkClassName = "flex h-full items-center hover:bg-slate-600 px-2";
+  const pathName = usePathname();
+  const linkClassName =
+    "flex h-full items-center hover:bg-slate-600 px-2 data-[state=active]:bg-slate-600";
   return (
     <div className="flex h-16 w-full bg-slate-900 px-5 text-lg font-bold text-white">
       <div className="flex flex-grow items-center gap-x-4">
         <Image
           src="/adelaide_logo.png"
-          width={50}
-          height={50}
+          width="0"
+          height="0"
+          sizes="100vh"
           alt="Adelaide University Logo"
+          loading="lazy"
+          className="h-full w-auto"
         />
         {Object.entries(menuMap).map(([title, ref]) => (
-          <a href={ref} key={title} className={linkClassName}>
+          <Link
+            href={ref}
+            key={title}
+            className={linkClassName}
+            data-state={
+              pathName.split("/")[1] === ref.split("/")[1]
+                ? "active"
+                : "inactive"
+            }
+          >
             {title}
-          </a>
+          </Link>
         ))}
       </div>
       <div>
-        <a href="#" className={linkClassName}>
+        <Link
+          href="/auth"
+          className={linkClassName}
+          data-state={pathName === "/auth" ? "active" : "inactive"}
+        >
           Login
-        </a>
+        </Link>
       </div>
     </div>
   );
