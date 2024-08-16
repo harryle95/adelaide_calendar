@@ -147,3 +147,4 @@ class Query:
             response_dto=dto.CourseSearchDTO,
             page_size=page_size,
         )
+
