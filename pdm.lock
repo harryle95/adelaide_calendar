@@ -3,9 +3,12 @@
 
 [metadata]
 groups = ["default", "analysis", "dev"]
-strategy = ["cross_platform", "inherit_metadata"]
-lock_version = "4.4.1"
-content_hash = "sha256:4be0c0bff7897b8ea12895a3a5f9cd953f98db9f2c89689192ee9a0c668cbe9d"
+strategy = ["inherit_metadata"]
+lock_version = "4.5.0"
+content_hash = "sha256:0dd7b6ff6701ac6e2a9166c76047d00b0e9cd5245f59461ae32551e4e2a58f1c"
+
+[[metadata.targets]]
+requires_python = "==3.11.*"
 
 [[package]]
 name = "advanced-alchemy"
@@ -15,6 +18,7 @@ summary = "Ready-to-go SQLAlchemy concoctions."
 groups = ["default"]
 dependencies = [
     "alembic>=1.12.0",
+    "eval-type-backport; python_version <= \"3.9\"",
     "greenlet; sys_platform == \"darwin\"",
     "sqlalchemy>=2.0.20",
     "typing-extensions>=4.0.0",
@@ -47,6 +51,8 @@ groups = ["default"]
 dependencies = [
     "Mako",
     "SQLAlchemy>=1.3.0",
+    "importlib-metadata; python_version < \"3.9\"",
+    "importlib-resources; python_version < \"3.9\"",
     "typing-extensions>=4",
 ]
 files = [
@@ -60,6 +66,9 @@ version = "0.7.0"
 requires_python = ">=3.8"
 summary = "Reusable constraint types to use with typing.Annotated"
 groups = ["default"]
+dependencies = [
+    "typing-extensions>=4.0.0; python_version < \"3.9\"",
+]
 files = [
     {file = "annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53"},
     {file = "annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89"},
@@ -72,8 +81,10 @@ requires_python = ">=3.8"
 summary = "High level compatibility layer for multiple asynchronous event loop implementations"
 groups = ["default"]
 dependencies = [
+    "exceptiongroup>=1.0.2; python_version < \"3.11\"",
     "idna>=2.8",
     "sniffio>=1.1",
+    "typing-extensions>=4.1; python_version < \"3.11\"",
 ]
 files = [
     {file = "anyio-4.4.0-py3-none-any.whl", hash = "sha256:c1b2d8f46a8a812513012e1107cb0e68c17159a7a594208005a57dc776e1bdc7"},
@@ -88,6 +99,7 @@ summary = "Argon2 for Python"
 groups = ["default"]
 dependencies = [
     "argon2-cffi-bindings",
+    "typing-extensions; python_version < \"3.8\"",
 ]
 files = [
     {file = "argon2_cffi-23.1.0-py3-none-any.whl", hash = "sha256:c670642b78ba29641818ab2e68bd4e6a78ba53b7eff7b4c3815ae16abf91c7ea"},
@@ -216,9 +228,10 @@ name = "click"
 version = "8.1.7"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["analysis", "default"]
+groups = ["default", "analysis"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
+    "importlib-metadata; python_version < \"3.8\"",
 ]
 files = [
     {file = "click-8.1.7-py3-none-any.whl", hash = "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28"},
@@ -230,7 +243,7 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["analysis", "default", "dev"]
+groups = ["default", "analysis", "dev"]
 marker = "sys_platform == \"win32\" or platform_system == \"Windows\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
@@ -281,6 +294,7 @@ summary = "Code coverage measurement for Python"
 groups = ["dev"]
 dependencies = [
     "coverage==7.6.1",
+    "tomli; python_full_version <= \"3.11.0a6\"",
 ]
 files = [
     {file = "coverage-7.6.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:7dea0889685db8550f839fa202744652e87c60015029ce3f60e006f8c4462c93"},
@@ -513,6 +527,9 @@ version = "0.14.0"
 requires_python = ">=3.7"
 summary = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.8\"",
+]
 files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
@@ -541,6 +558,7 @@ summary = "A comprehensive HTTP client library."
 groups = ["default"]
 dependencies = [
     "pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2; python_version > \"3.0\"",
+    "pyparsing<3,>=2.4.2; python_version < \"3.0\"",
 ]
 files = [
     {file = "httplib2-0.22.0-py3-none-any.whl", hash = "sha256:14ae0a53c1ba8f3d37e9e27cf37eabb0fb9980f435ba405d546948b009dd64dc"},
@@ -651,7 +669,10 @@ groups = ["default"]
 dependencies = [
     "anyio>=3",
     "click",
+    "exceptiongroup; python_version < \"3.11\"",
     "httpx>=0.22",
+    "importlib-metadata; python_version < \"3.10\"",
+    "importlib-resources>=5.12.0; python_version < \"3.9\"",
     "msgspec>=0.18.2",
     "multidict>=6.0.2",
     "polyfactory>=2.6.3",
@@ -795,6 +816,7 @@ summary = "Optional static typing for Python"
 groups = ["analysis"]
 dependencies = [
     "mypy-extensions>=1.0.0",
+    "tomli>=1.1.0; python_version < \"3.11\"",
     "typing-extensions>=4.6.0",
 ]
 files = [
@@ -991,6 +1013,7 @@ groups = ["default"]
 dependencies = [
     "annotated-types>=0.4.0",
     "pydantic-core==2.20.1",
+    "typing-extensions>=4.12.2; python_version >= \"3.13\"",
     "typing-extensions>=4.6.1; python_version < \"3.13\"",
 ]
 files = [
@@ -1072,7 +1095,6 @@ version = "3.1.2"
 requires_python = ">=3.6.8"
 summary = "pyparsing module - Classes and methods to define and execute parsing grammars"
 groups = ["default"]
-marker = "python_version > \"3.0\""
 files = [
     {file = "pyparsing-3.1.2-py3-none-any.whl", hash = "sha256:f9db75911801ed778fe61bb643079ff86601aca99fcae6345aa67292038fb742"},
     {file = "pyparsing-3.1.2.tar.gz", hash = "sha256:a1bac0ce561155ecc3ed78ca94d3c9378656ad4c94c1270de543f621420f94ad"},
@@ -1086,6 +1108,7 @@ summary = "Command line wrapper for pyright"
 groups = ["analysis"]
 dependencies = [
     "nodeenv>=1.6.0",
+    "typing-extensions>=3.7; python_version < \"3.8\"",
 ]
 files = [
     {file = "pyright-1.1.375-py3-none-any.whl", hash = "sha256:4c5e27eddeaee8b41cc3120736a1dda6ae120edf8523bb2446b6073a52f286e3"},
@@ -1100,9 +1123,11 @@ summary = "pytest: simple powerful testing with Python"
 groups = ["dev"]
 dependencies = [
     "colorama; sys_platform == \"win32\"",
+    "exceptiongroup>=1.0.0rc8; python_version < \"3.11\"",
     "iniconfig",
     "packaging",
     "pluggy<2,>=1.5",
+    "tomli>=1; python_version < \"3.11\"",
 ]
 files = [
     {file = "pytest-8.3.2-py3-none-any.whl", hash = "sha256:4ba08f9ae7dcf84ded419494d229b48d0903ea6407b030eaec46df5e6a73bba5"},
@@ -1168,7 +1193,7 @@ name = "pyyaml"
 version = "6.0.2"
 requires_python = ">=3.8"
 summary = "YAML parser and emitter for Python"
-groups = ["analysis", "default"]
+groups = ["default", "analysis"]
 files = [
     {file = "PyYAML-6.0.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:cc1c1159b3d456576af7a3e4d1ba7e6924cb39de8f67111c735f6fc832082774"},
     {file = "PyYAML-6.0.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1e2120ef853f59c7419231f3bf4e7021f1b936f6ebd222406c3b60212205d2ee"},
@@ -1223,6 +1248,7 @@ groups = ["default"]
 dependencies = [
     "markdown-it-py>=2.2.0",
     "pygments<3.0.0,>=2.13.0",
+    "typing-extensions<5.0,>=4.0.0; python_version < \"3.9\"",
 ]
 files = [
     {file = "rich-13.7.1-py3-none-any.whl", hash = "sha256:4edbae314f59eb482f54e9e30bf00d33350aaa94f4bfcd4e9e3110e64d0d7222"},
@@ -1237,6 +1263,7 @@ summary = "Format click help output nicely with rich"
 groups = ["default"]
 dependencies = [
     "click>=7",
+    "importlib-metadata; python_version < \"3.8\"",
     "rich>=10.7",
     "typing-extensions",
 ]
@@ -1305,6 +1332,7 @@ summary = "Ensure your __slots__ are working properly."
 groups = ["analysis"]
 dependencies = [
     "click<9.0,>=8.0",
+    "tomli<3.0.0,>=0.2.6; python_version < \"3.11\"",
 ]
 files = [
     {file = "slotscheck-0.19.0-py3-none-any.whl", hash = "sha256:53fbc9befacb331a2ab25b385004d99ea72b5cee4f3deb6da676c8f08d0fcdd9"},
@@ -1330,6 +1358,7 @@ summary = "Database Abstraction Library"
 groups = ["default"]
 dependencies = [
     "greenlet!=0.4.17; (platform_machine == \"win32\" or platform_machine == \"WIN32\" or platform_machine == \"AMD64\" or platform_machine == \"amd64\" or platform_machine == \"x86_64\" or platform_machine == \"ppc64le\" or platform_machine == \"aarch64\") and python_version < \"3.13\"",
+    "importlib-metadata; python_version < \"3.8\"",
     "typing-extensions>=4.6.0",
 ]
 files = [
@@ -1350,7 +1379,7 @@ name = "types-passlib"
 version = "1.7.7.20240327"
 requires_python = ">=3.8"
 summary = "Typing stubs for passlib"
-groups = ["default"]
+groups = ["analysis"]
 files = [
     {file = "types-passlib-1.7.7.20240327.tar.gz", hash = "sha256:4cce6a1a3a6afee9fc4728b4d9784300764ac2be747f5bcc01646d904b85f4bb"},
     {file = "types_passlib-1.7.7.20240327-py3-none-any.whl", hash = "sha256:3a3b7f4258b71034d2e2f4f307d6810f9904f906cdf375514c8bdbdb28a4ad23"},
@@ -1361,7 +1390,7 @@ name = "types-requests"
 version = "2.32.0.20240712"
 requires_python = ">=3.8"
 summary = "Typing stubs for requests"
-groups = ["default"]
+groups = ["analysis"]
 dependencies = [
     "urllib3>=2",
 ]
@@ -1375,7 +1404,7 @@ name = "typing-extensions"
 version = "4.12.2"
 requires_python = ">=3.8"
 summary = "Backported and Experimental Type Hints for Python 3.8+"
-groups = ["analysis", "default"]
+groups = ["default", "analysis"]
 files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
@@ -1400,6 +1429,7 @@ requires_python = ">=3.8"
 summary = "tzinfo object for the local timezone"
 groups = ["default"]
 dependencies = [
+    "backports-zoneinfo; python_version < \"3.9\"",
     "tzdata; platform_system == \"Windows\"",
 ]
 files = [
@@ -1423,7 +1453,7 @@ name = "urllib3"
 version = "2.2.2"
 requires_python = ">=3.8"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default"]
+groups = ["default", "analysis"]
 files = [
     {file = "urllib3-2.2.2-py3-none-any.whl", hash = "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472"},
     {file = "urllib3-2.2.2.tar.gz", hash = "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"},
@@ -1438,6 +1468,7 @@ groups = ["default"]
 dependencies = [
     "click>=7.0",
     "h11>=0.8",
+    "typing-extensions>=4.0; python_version < \"3.11\"",
 ]
 files = [
     {file = "uvicorn-0.30.5-py3-none-any.whl", hash = "sha256:b2d86de274726e9878188fa07576c9ceeff90a839e2b6e25c917fe05f5a6c835"},
@@ -1492,6 +1523,7 @@ groups = ["analysis"]
 dependencies = [
     "distlib<1,>=0.3.7",
     "filelock<4,>=3.12.2",
+    "importlib-metadata>=6.6; python_version < \"3.8\"",
     "platformdirs<5,>=3.9.1",
 ]
 files = [

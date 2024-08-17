@@ -27,6 +27,33 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 from tzlocal import get_localzone_name
 
+__all__ = (
+    "EventDTO",
+    "OAuthToken",
+    "User",
+    "UserLoginDTO",
+    "authorise",
+    "create_event",
+    "get_secret_data",
+    "get_user_info",
+    "hash_plain_text_password",
+    "index",
+    "login",
+    "logout",
+    "oauth2callback",
+    "register",
+    "render_calendar",
+    "render_event_form",
+    "render_login",
+    "render_login_form",
+    "render_registration",
+    "retrieve_user_handler",
+    "revoke",
+    "validate_password",
+    "validated_user_guard",
+)
+
+
 # --------------------------------------------------------------------------#
 # Constants and Environment Variables                                       #
 # --------------------------------------------------------------------------#
@@ -247,7 +274,7 @@ async def create_event(
     request: Request[User, MutableMapping[str, Any], Any],
 ) -> Redirect:
     auth = {k: v for k, v in request.auth["creds"].items() if k != "user_email"}
-    credentials = google.oauth2.credentials.Credentials(**auth)  # type: ignore[no-untyped-call]
+    credentials = google.oauth2.credentials.Credentials(**auth)
     service = googleapiclient.discovery.build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
     service.events().insert(calendarId="primary", body=data.to_dict()).execute()
     return Redirect("/")
@@ -330,20 +357,15 @@ async def authorise(request: Request[User, Any, Any], state: State) -> Redirect:
         include_granted_scopes="true",
     )
 
-    # Store the state so the callback can verify the auth server response.
-    state["authorization_state"] = authorization_state
-
     return Redirect(authorization_url)
 
 
-@get("/oauth2callback")
-async def oauth2callback(state: State, request: Request[User, Any, Any]) -> Redirect:
+@get("/oauth2callback", exclude_from_auth=False)
+async def oauth2callback(request: Request[User, Any, Any]) -> Redirect:
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
-    authorization_state = state.authorization_state
-
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=authorization_state
+        CLIENT_SECRETS_FILE, scopes=SCOPES, state=request.url.query_params["state"]
     )
     flow.redirect_uri = "http://localhost:8080/oauth2callback"
 
@@ -359,10 +381,10 @@ async def oauth2callback(state: State, request: Request[User, Any, Any]) -> Redi
         user_email=request.user.email,
         token=credentials.token,
         refresh_token=credentials.refresh_token,
-        token_uri=credentials.token_uri,  # type: ignore
+        token_uri=credentials.token_uri,  # type: ignore[attribute-access]
         client_id=credentials.client_id,
         client_secret=credentials.client_secret,
-        scopes=credentials.scopes,  # type: ignore
+        scopes=credentials.scopes,  # type: ignore[attribute-access]
     )
     MOCK_OAUTH_DB[request.user.email] = oauth_creds
     MOCK_USER_DB[request.user.email].is_authorised = True
@@ -374,9 +396,9 @@ async def oauth2callback(state: State, request: Request[User, Any, Any]) -> Redi
 @get("/revoke", guards=[validated_user_guard])
 async def revoke(request: Request[User, MutableMapping[str, Any], Any]) -> None:
     auth = {k: v for k, v in request.auth["creds"].items() if k != "user_email"}
-    credentials = google.oauth2.credentials.Credentials(**auth)  # type: ignore[no-untyped-call]
+    credentials = google.oauth2.credentials.Credentials(**auth)
 
-    revoke = requests.post(
+    revoke = requests.post(  # noqa: S113
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
         headers={"content-type": "application/x-www-form-urlencoded"},
