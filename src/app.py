@@ -27,6 +27,8 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 from tzlocal import get_localzone_name
 
+# 
+
 # --------------------------------------------------------------------------#
 # Constants and Environment Variables                                       #
 # --------------------------------------------------------------------------#
@@ -41,6 +43,17 @@ API_VERSION = "v3"
 # requirement
 # TODO: remove this from production and use TLS
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+
+# Constants re course data
+COURSE_SEARCH_TARGET = "/system/COURSE_SEARCH/queryx"
+CAMPUS_TARGET = "/system/CAMPUS/queryx"
+CSP_ACAD_CAREER_TARGET = "/system/CSP_ACAD_CAREER/queryx"
+TERMS_TARGET = "/system/TERMS/queryx"
+SUBJECT_TARGET = "/system/SUBJECTS_BY_YEAR/queryx"
+API_END_POINT = "https://courseplanner-api.adelaide.edu.au/api/course-planner-query/v1/"
+VIRTUAL = "Y"
+YEAR = 2024
 
 
 # --------------------------------------------------------------------------#
@@ -399,6 +412,149 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
     exclude=["/schema"],
 )
 
+
+# QUERRIES ---------------------------------------------
+from src.query.query import Query
+from src.query.dto import *
+from src.query.helpers import *
+
+L= []
+
+# remove this function - it works
+@get('/test', exclude_from_auth=True)
+async def test() -> str:
+    L.append('ANSO')
+    return f"this is a test page!\n your list has {L[0]}"
+
+# course
+@get('/course', exclude_from_auth=True)
+async def get_course(
+        course_title: str | None = None,
+        subject_areas: str | None = None,
+        catalogue_number: int | None = None,
+        class_number: str | None = None,
+        year: int = YEAR,
+        term: str | None = None,
+        academic_career: str | None = None,
+        campus: str | None = None,
+        page_number: int = 1,
+        page_size: int = 25,
+        ) -> Sequence[dto.CourseSearchDTO]:
+        params_builder = ParamsBuilder(
+            course_title=course_title,
+            subject_areas=subject_areas,
+            catalogue_number=catalogue_number,
+            class_number=class_number,
+            year=year,
+            term=term,
+            academic_career=academic_career,
+            campus=campus,
+            )
+        params_builder.add(
+            page_number=page_number,
+            page_size=page_size,
+            target=COURSE_SEARCH_TARGET,
+            virtual=VIRTUAL,
+            )
+        # the cast function ensures the query returns an object of type Sequence
+        return cast(
+            Sequence[dto.CourseSearchDTO],
+            Query.query(params_builder, dto.CourseSearchDTO)
+            )
+
+# subjects
+@get('/subjects', exclude_from_auth=True)
+async def subjects() -> Sequence[dto.SubjectDTO]:
+        return cast(
+            Sequence[dto.SubjectDTO],
+            Query.query(
+                ParamsBuilder(
+                    target=SUBJECT_TARGET,
+                    MaxRows=9999,
+                    virtual=VIRTUAL,
+                    year_from=YEAR,
+                    year_to=YEAR,
+                ),
+                dto.SubjectDTO,
+            )
+        )
+
+# term
+@get('/term', exclude_from_auth=True)
+async def term() -> Sequence[dto.TermDTO]:
+        return cast(
+            Sequence[dto.TermDTO],
+            Query.query(
+                ParamsBuilder(
+                    target=TERMS_TARGET,
+                    MaxRows=9999,
+                    virtual=VIRTUAL,
+                    year_from=YEAR,
+                    year_to=YEAR,
+                ),
+                dto.TermDTO,
+            )
+        )
+
+# course paginator
+@get('/paginator', exclude_from_auth=True)
+async def course_paginator(
+        course_title: str | None = None,
+        subject_areas: str | None = None,
+        catalogue_number: int | None = None,
+        class_number: str | None = None,
+        year: int = YEAR,
+        term: str | None = None,
+        academic_career: str | None = None,
+        campus: str | None = None,
+        page_size: int = 25,
+    ) -> Paginator:
+        params_builder = ParamsBuilder(
+            course_title=course_title,
+            subject_areas=subject_areas,
+            catalogue_number=catalogue_number,
+            class_number=class_number,
+            year=year,
+            term=term,
+            academic_career=academic_career,
+            campus=campus,
+        )
+        params_builder.add(
+            page_size=page_size,
+            target=COURSE_SEARCH_TARGET,
+            virtual=VIRTUAL,
+        )
+        return Paginator(
+            end_point=API_END_POINT,
+            params=params_builder,
+            response_dto=dto.CourseSearchDTO,
+            page_size=page_size,
+        )
+
+# acedemic year
+@get('/academic_career', exclude_from_auth=True)
+async def academic_career() -> Sequence[dto.CareerDTO]:
+        return cast(
+            Sequence[dto.CareerDTO],
+            Query.query(
+                ParamsBuilder(target=CSP_ACAD_CAREER_TARGET, MaxRows=9999),
+                dto.CareerDTO,
+            ),
+        )
+
+# campus
+@get('/campus', exclude_from_auth=True)
+async def campus() -> Sequence[dto.CampusDTO]:
+        return cast(
+            Sequence[dto.CampusDTO],
+            Query.query(
+                ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.CampusDTO
+            ),
+        )
+
+
+# ------------------------------------------------------
+
 app = Litestar(
     route_handlers=[
         index,
@@ -414,6 +570,13 @@ app = Litestar(
         render_registration,
         render_calendar,
         create_event,
+        test, # remove this
+        get_course,
+        subjects,
+        term,
+        course_paginator,
+        academic_career,
+        campus,
     ],
     state=State({}),
     on_app_init=[session_auth.on_app_init],
