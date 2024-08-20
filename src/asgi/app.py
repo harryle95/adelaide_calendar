@@ -3,6 +3,7 @@ from typing import Any
 
 import google_auth_oauthlib.flow
 from litestar import Litestar, Request, Response, get
+from litestar.datastructures import State
 from litestar.response import Redirect
 
 from src.asgi.plugins import alchemy
@@ -33,7 +34,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 
 @get("/authorise")
-async def authorise() -> Redirect:
+async def authorise(state: State) -> Redirect:
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
     # The URI created here must exactly match one of the authorized redirect URIs
     # for the OAuth 2.0 client, which you configured in the API Console. If this
@@ -48,28 +49,29 @@ async def authorise() -> Redirect:
         # Enable incremental authorization. Recommended as a best practice.
         include_granted_scopes="true",
     )
-
+    state.authorization_state = authorization_state
     return Redirect(authorization_url)
 
 
 @get("/oauth2callback")
-async def oauth2callback(request: Request[Any, Any, Any]) -> Response:
+async def oauth2callback(request: Request[Any, Any, Any], state: State) -> Response:
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
+
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=request.url.query_params["state"]
+        CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
+        state=state.authorization_state,
     )
     flow.redirect_uri = "http://localhost:8080/oauth2callback"
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = str(request.url)
     flow.fetch_token(authorization_response=authorization_response)
-
     # Store credentials in the session.
     # ACTION ITEM: In a production app, you likely want to save these
     #              credentials in a persistent database instead.
     credentials = flow.credentials
-
     session = {"creds": credentials}
     request.set_session(session)
     response = Response(None)
