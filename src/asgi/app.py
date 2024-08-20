@@ -23,7 +23,7 @@ __all__ = (
 # This is path to OAuth json creds. Must be a webserver type and not desktop
 CLIENT_SECRETS_FILE = ".creds/client_secrets.json"
 # Calendar scope - we want to be able to read and write to calendars
-SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
+SCOPES = ["https://www.googleapis.com/auth/userinfo.profile"]
 API_SERVICE_NAME = "calendar"
 API_VERSION = "v3"
 
