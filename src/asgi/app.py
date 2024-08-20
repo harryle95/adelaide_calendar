@@ -6,10 +6,15 @@ from litestar import Litestar, Request, Response, get
 from litestar.response import Redirect
 
 from src.asgi.plugins import alchemy
-from src.controller.user.guards import session_auth
-from src.controller.user.router import AuthController, UserController
+from src.controller.user.router import UserController
 from src.utils.dependencies import create_collection_dependencies
 from src.utils.exceptions import exception_to_http_response
+
+__all__ = (
+    "authorise",
+    "oauth2callback",
+)
+
 
 # --------------------------------------------------------------------------#
 # Constants and Environment Variables                                       #
