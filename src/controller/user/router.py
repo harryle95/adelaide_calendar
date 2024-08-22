@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Any
 
-from litestar import Controller, Request, delete, get, patch, post
+from litestar import Controller, Request, delete, get, post
 from litestar.di import Provide
 
 from src.controller.user.dependencies import provide_users_service
-from src.controller.user.schema import AccountLogin, User, UserCreate, UserUpdate
+from src.controller.user.schema import User, UserCreate, UserLogin
 from src.controller.user.services import UserService
 from src.controller.user.urls import AuthURL, UserURL
 
@@ -41,7 +41,7 @@ class AuthController(Controller):
         exclude_from_auth=True,
     )
     async def register_user(
-        self, users_service: UserService, data: AccountLogin, request: Request[Any, Any, Any]
+        self, users_service: UserService, data: UserCreate, request: Request[Any, Any, Any]
     ) -> None:
         user = await users_service.create(data)
         request.set_session({"user_id": user.id})
@@ -58,10 +58,10 @@ class AuthController(Controller):
     async def login_user(
         self,
         users_service: UserService,
-        data: AccountLogin,
+        data: UserLogin,
         request: Request[Any, Any, Any],
     ) -> None:
-        user = await users_service.authenticate(data.email, data.password)
+        user = await users_service.authenticate(data.email)
         request.set_session({"user_id": user.id})
         return
 
@@ -124,44 +124,6 @@ class UserController(Controller):
     ) -> User:
         """Get a user."""
         db_obj = await users_service.get(user_id)
-        return users_service.to_schema(db_obj, schema_type=User)
-
-    @post(
-        operation_id="CreateUser",
-        name="users:create",
-        summary="Create a new user.",
-        cache_control=None,
-        description="A user who can login and use the system.",
-        path=UserURL.NO_ID.value,
-    )
-    async def create_user(
-        self,
-        users_service: UserService,
-        data: UserCreate,
-    ) -> User:
-        """Create a new user."""
-        db_obj = await users_service.create(data.to_dict())
-        return users_service.to_schema(db_obj, schema_type=User)
-
-    @patch(
-        operation_id="UpdateUser",
-        name="users:update",
-        path=UserURL.BY_ID.value,
-    )
-    async def update_user(
-        self,
-        data: UserUpdate,
-        users_service: UserService,
-        user_id: Annotated[
-            UUID,
-            Parameter(
-                title="User ID",
-                description="The user to update.",
-            ),
-        ],
-    ) -> User:
-        """Create a new user."""
-        db_obj = await users_service.update(item_id=user_id, data=data.to_dict())
         return users_service.to_schema(db_obj, schema_type=User)
 
     @delete(
