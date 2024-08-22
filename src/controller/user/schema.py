@@ -1,41 +1,19 @@
 from uuid import UUID
 
-import msgspec
-
 from src.utils.schema import CamelizedBaseStruct
 
-__all__ = (
-    "AccountLogin",
-    "User",
-    "UserCreate",
-    "UserUpdate",
-)
-
-
-class User(CamelizedBaseStruct):
-    id: UUID
-    email: str
-    name: str | None
-    is_superuser: bool
-    is_verified: bool
+__all__ = ("User", "UserCreate", "UserLogin")
 
 
 class UserCreate(CamelizedBaseStruct):
     email: str
-    password: str
-    name: str | None = None
-    is_superuser: bool = False
-    is_verified: bool = False
+    name: str | None
+    avatar_url: str | None
 
 
-class UserUpdate(CamelizedBaseStruct, omit_defaults=True):
-    email: str | None | msgspec.UnsetType = msgspec.UNSET
-    password: str | None | msgspec.UnsetType = msgspec.UNSET
-    name: str | None | msgspec.UnsetType = msgspec.UNSET
-    is_superuser: bool | None | msgspec.UnsetType = msgspec.UNSET
-    is_verified: bool | None | msgspec.UnsetType = msgspec.UNSET
+class User(UserCreate):
+    id: UUID
+    is_superuser: bool
 
 
-class AccountLogin(CamelizedBaseStruct):
-    email: str
-    password: str
+UserLogin = UserCreate

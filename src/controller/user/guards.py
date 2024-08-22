@@ -12,7 +12,6 @@ from src.db.models.user import User
 
 __all__ = (
     "require_superuser",
-    "require_verified_user",
     "retrieve_user_handler",
 )
 
@@ -20,11 +19,6 @@ __all__ = (
 def require_superuser(connection: ASGIConnection[HandlerT, User, AuthT, StateT], _: BaseRouteHandler) -> None:
     if not connection.user or not connection.user.is_superuser:
         raise PermissionDeniedException("Operation requires superuser privilege")
-
-
-def require_verified_user(connection: ASGIConnection[HandlerT, User, AuthT, StateT], _: BaseRouteHandler) -> None:
-    if not connection.user or not connection.user.is_verified:
-        raise PermissionDeniedException("Operation reserved for verified users")
 
 
 async def retrieve_user_handler(

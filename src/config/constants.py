@@ -24,3 +24,10 @@ DEFAULT_USER_ROLE = "Application Access"
 """The name of the default role assigned to all users."""
 SUPERUSER_ACCESS_ROLE = "Superuser"
 """The name of the super user role."""
+
+GOOGLE_SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+"""Scopes for Google OAuth2"""
