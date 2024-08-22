@@ -14,9 +14,7 @@ class User(UUIDAuditBase):
 
     email: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     name: Mapped[str | None] = mapped_column(nullable=True, default=None)
-    hashed_password: Mapped[str | None] = mapped_column(String(length=255), nullable=True, default=None)
     avatar_url: Mapped[str | None] = mapped_column(String(length=500), nullable=True, default=None)
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
-    is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
     joined_at: Mapped[datetime.date] = mapped_column(default=datetime.datetime.now(datetime.UTC))
     last_logged_in_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now(datetime.UTC))
