@@ -6,6 +6,8 @@ from src.controller.proxy.schema import Campus, Career, CourseSearch, Subject, T
 from src.controller.proxy.services import ProxyQueryService
 from src.controller.proxy.urls import ProxyURL
 
+__all__ = ("ProxyController",)
+
 
 class ProxyController(Controller):
     """Proxy Controller"""

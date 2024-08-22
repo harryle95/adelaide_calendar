@@ -2,6 +2,15 @@ from __future__ import annotations
 
 from src.utils.schema import CamelizedBaseStruct
 
+__all__ = (
+    "Campus",
+    "Career",
+    "CourseSearch",
+    "Subject",
+    "Term",
+)
+
+
 CAREER_MAPPING = {"FIELDVALUE": "value", "XLATLONGNAME": "name"}
 CAMPUS_MAPPING = {"CAMPUS": "name", "DESCR": "description"}
 SUBJECT_MAPPING = {"SUBJECT": "name", "DESCR": "description"}

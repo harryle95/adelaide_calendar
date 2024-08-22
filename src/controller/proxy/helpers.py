@@ -102,7 +102,7 @@ class Paginator:
         if self._has_next:
             self.params.set("page_number", self.page_number)
             async with aiohttp.ClientSession() as client:
-                raw_response = await client.get(self.end_point, params=self.params.params)  # noqa: S113
+                raw_response = await client.get(self.end_point, params=self.params.params)
             response = await ResponseParser.parse(raw_response, self.dto)
             self.page_number += 1
             if (
