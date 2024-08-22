@@ -11,6 +11,9 @@ import src.controller.proxy.schema as dto
 
 from .helpers import Paginator, ParamsBuilder, ResponseParser
 
+__all__ = ("ProxyQueryService",)
+
+
 COURSE_SEARCH_TARGET = "/system/COURSE_SEARCH/queryx"
 CAMPUS_TARGET = "/system/CAMPUS/queryx"
 CSP_ACAD_CAREER_TARGET = "/system/CSP_ACAD_CAREER/queryx"
@@ -28,7 +31,7 @@ class ProxyQueryService:
             raw_response = await client.get(
                 url=API_END_POINT,
                 params=param_builder.params,
-            )  # noqa: S113
+            )
             result = await ResponseParser.parse(raw_response, response_dto)
             return result.data
 
