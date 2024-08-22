@@ -169,3 +169,9 @@ docs-linkcheck-full: 									## Run the full link check on the docs
 app-dev:											## Start the application - debug mode
 	@echo "=>Running application developer mode"
 	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload
+
+
+.PHONY: app-dev-ssl 
+app-dev-ssl: 										## Start the application in debug mode with SSL cert
+	@echo "=>Running application developer mode"
+	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem --create-self-signed-cert
