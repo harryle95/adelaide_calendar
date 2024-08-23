@@ -7,5 +7,6 @@
     "msgspec",
     "saqlalchemy",
     "sqlalchemy"
-  ]
+  ],
+  "makefile.configureOnOpen": false
 }
