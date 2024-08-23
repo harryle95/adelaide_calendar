@@ -5,7 +5,7 @@
 groups = ["default", "analysis", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:346b36f0629082b29d8e4e5b7f813cab38bd92bcada77c37835cb27da9df5430"
+content_hash = "sha256:f793e035b3f80c85233fa53b5c38ca23c67ce5e4b3547f7b26709940cbf7c5d6"
 
 [[package]]
 name = "advanced-alchemy"
@@ -598,6 +598,21 @@ groups = ["default"]
 files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
+]
+
+[[package]]
+name = "hishel"
+version = "0.0.30"
+requires_python = ">=3.8"
+summary = "Persistent cache implementation for httpx and httpcore"
+groups = ["default"]
+dependencies = [
+    "httpx>=0.22.0",
+    "typing-extensions>=4.8.0",
+]
+files = [
+    {file = "hishel-0.0.30-py3-none-any.whl", hash = "sha256:0c73a779a6b554b52dff75e5962057df25764fd798c31b9435ce6398b1b171c8"},
+    {file = "hishel-0.0.30.tar.gz", hash = "sha256:656393ee77e9c39a0d6c527c74810e15d96e598dcb9b191f20a788608ceaca99"},
 ]
 
 [[package]]
