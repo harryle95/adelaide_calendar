@@ -6,6 +6,7 @@ const menuMap: Record<string, string> = {
   Schedule: "/schedule",
   Courses: "/course",
   Degree: "/degree",
+  Test: "/test",
 };
 
 const NavigationMenu = React.memo(() => {
