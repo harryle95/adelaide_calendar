@@ -1,7 +1,6 @@
-import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { GearIcon } from "@radix-ui/react-icons";
-import AdvancedSearchForm from "./advanced-search-form.tsx";
+import AdvancedSearchForm from "./AdvancedSearchForm";
 
 const AdvancedSearchDialog = () => (
   <Dialog.Root>
