@@ -14,6 +14,11 @@ interface InputProps
   name: string;
   labelClassName: string;
   inputClassName: string;
+  labelTitle?: string;
+}
+
+function capitalise(name: string): string {
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 interface InputWithLinkProps extends InputProps {
@@ -45,16 +50,27 @@ const Footer = (props: FooterProps) => {
 };
 
 const InputGroup = (props: InputProps) => {
-  const { labelClassName, inputClassName, name, ...rest } = props;
+  const {
+    labelClassName,
+    inputClassName,
+    name,
+    labelTitle,
+    placeholder,
+    ...rest
+  } = props;
   const isRequired = props.required ? "*" : "";
+  const formatedTitle = labelTitle
+    ? labelTitle + isRequired
+    : capitalise(name) + isRequired;
+  const formatedPlaceholder = placeholder ? placeholder : "Enter " + name;
   return (
     <>
       <label htmlFor={name} className={labelClassName}>
-        {name.charAt(0).toUpperCase() + name.slice(1) + isRequired}
+        {formatedTitle}
       </label>
       <input
         id={name}
-        placeholder={`Enter ${name}`}
+        placeholder={formatedPlaceholder}
         name={name}
         {...rest}
         className={inputClassName}
@@ -71,15 +87,21 @@ const InputGroupWithLink = (props: InputWithLinkProps) => {
     className,
     labelClassName,
     inputClassName,
+    labelTitle,
+    placeholder,
     name,
     ...rest
   } = props;
   const isRequired = props.required ? "*" : "";
+  const formattedTitle = labelTitle
+    ? labelTitle + isRequired
+    : capitalise(name) + isRequired;
+  const formatedPlaceholder = placeholder ? placeholder : "Enter " + name;
   return (
     <>
       <div className={className}>
         <label htmlFor={name} className={labelClassName}>
-          {name.charAt(0).toUpperCase() + name.slice(1) + isRequired}
+          {formattedTitle}
         </label>
         <Link to={linkTo} className={linkClassName}>
           {linkTitle}
@@ -87,7 +109,7 @@ const InputGroupWithLink = (props: InputWithLinkProps) => {
       </div>
       <input
         id={name}
-        placeholder={`Enter ${name}`}
+        placeholder={formatedPlaceholder}
         name={name}
         {...rest}
         className={inputClassName}

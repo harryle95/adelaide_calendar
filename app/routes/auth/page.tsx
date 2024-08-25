@@ -27,12 +27,6 @@ function SignUpForm() {
           required
         />
         <Form.InputGroup
-          name="email"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          required
-        />
-        <Form.InputGroup
           name="password"
           type="password"
           labelClassName={labelClass}
@@ -112,6 +106,36 @@ function ForgotPasswordForm() {
   );
 }
 
+function ChangePasswordForm() {
+  return (
+    <Form.Root className={rootClass}>
+      <Form.Header className={headerClass} title="Change Password" />
+
+      <Form.Body className={bodyClass}>
+        <Form.InputGroup
+          name="oldPassword"
+          labelClassName={labelClass}
+          inputClassName={inputClass}
+          labelTitle="Old Password"
+          placeholder="Enter old password"
+          required
+        />
+        <Form.InputGroup
+          name="newPassword"
+          labelClassName={labelClass}
+          inputClassName={inputClass}
+          labelTitle="New Password"
+          placeholder="Enter new password"
+          required
+        />
+        <button type="submit" className={buttonClass}>
+          Submit
+        </button>
+      </Form.Body>
+    </Form.Root>
+  );
+}
+
 function Page() {
   return (
     <div className={pageClass}>
@@ -121,4 +145,4 @@ function Page() {
 }
 
 export default Page;
-export { SignUpForm, LoginForm, ForgotPasswordForm };
+export { SignUpForm, LoginForm, ForgotPasswordForm, ChangePasswordForm };
