@@ -64,7 +64,7 @@ class AuthController(Controller):
         data: UserLogin,
         request: Request[Any, Any, Any],
     ) -> None:
-        user = await users_service.authenticate(data.email)
+        user = await users_service.authenticate(data.name_or_email, data.password)
         request.set_session({"user_id": user.id})
         return
 
