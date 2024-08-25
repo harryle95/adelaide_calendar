@@ -34,7 +34,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         """Authenticate a user.
 
         Args:
-            username (str): _description_
+            username (str): username or email
             password (str | bytes): _description_
 
         Raises:
@@ -44,15 +44,15 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
             User: The user object
         """
         db_obj = await self.get_one_or_none(email=username)
+        # Try to get an object by email then username
         if db_obj is None:
-            msg = "User not found or password invalid"
-            raise PermissionDeniedException(msg)
+            db_obj = await self.get_one_or_none(name=username)
+        if db_obj is None:
+            raise PermissionDeniedException("User not found or password invalid")
         if db_obj.hashed_password is None:
-            msg = "User not found or password invalid."
-            raise PermissionDeniedException(msg)
+            raise PermissionDeniedException("User not found or password invalid.")
         if not await validate_password(password, db_obj.hashed_password):
-            msg = "User not found or password invalid"
-            raise PermissionDeniedException(msg)
+            raise PermissionDeniedException("User not found or password invalid")
         return db_obj
 
 

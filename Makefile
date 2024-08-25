@@ -57,7 +57,7 @@ clean: 												## Cleanup temporary build artifacts
 	@find . -name '*~' -exec rm -f {} +
 	@find . -name '__pycache__' -exec rm -rf {} +
 	@find . -name '.ipynb_checkpoints' -exec rm -rf {} +
-	@find . -name '*.sqlite' -exec rm -rf {} +
+	@find . -name '*.sqlite3' -exec rm -rf {} +
 	@rm -rf .coverage coverage.xml coverage.json htmlcov/ .pytest_cache tests/.pytest_cache tests/**/.pytest_cache .mypy_cache
 	$(MAKE) docs-clean
 

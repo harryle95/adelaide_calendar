@@ -1,6 +1,8 @@
 from typing import NotRequired, Required, TypedDict
 from uuid import UUID
 
+import msgspec
+
 from src.utils.schema import CamelizedBaseStruct
 
 __all__ = (
@@ -11,6 +13,7 @@ __all__ = (
     "UserLogin",
     "UserResetPasswordComplete",
     "UserResetPasswordInitiate",
+    "UserUpdate",
 )
 
 
@@ -20,6 +23,7 @@ class User(CamelizedBaseStruct):
     name: str
     is_superuser: bool
     is_verified: bool
+    avatar_url: str | None
 
 
 class UserLogin(CamelizedBaseStruct):
@@ -43,6 +47,12 @@ class UserResetPasswordInitiate(CamelizedBaseStruct):
 
 class UserResetPasswordComplete(CamelizedBaseStruct):
     password: str
+
+
+class UserUpdate(CamelizedBaseStruct, omit_defaults=True):
+    email: str | None | msgspec.UnsetType = msgspec.UNSET
+    name: str | None | msgspec.UnsetType = msgspec.UNSET
+    avatar_url: str | None | msgspec.UnsetType = msgspec.UNSET
 
 
 class OAuth2Config(TypedDict):
