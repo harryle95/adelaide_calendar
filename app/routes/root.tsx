@@ -3,9 +3,11 @@ import { Outlet } from "react-router-dom";
 
 function Root() {
   return (
-    <main>
+    <main className="h-screen w-screen flex flex-col">
       <NavigationMenu />
-      <Outlet />
+      <div className="grow shrink-0">
+        <Outlet />
+      </div>
     </main>
   );
 }
