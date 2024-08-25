@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any, cast
 
 from litestar import Controller, Request, delete, get, post
 from litestar.di import Provide
+from litestar.exceptions import PermissionDeniedException
+from litestar.response import Redirect
 
 from src.controller.user.dependencies import provide_users_service
 from src.controller.user.schema import User, UserCreate, UserLogin
-from src.controller.user.services import UserService
+from src.controller.user.services import GoogleOAuth2FlowService, UserService
 from src.controller.user.urls import AuthURL, UserURL
 
 __all__ = ("UserController",)
@@ -20,6 +22,7 @@ if TYPE_CHECKING:
 
     from advanced_alchemy.filters import FilterTypes
     from advanced_alchemy.service import OffsetPagination
+    from litestar.datastructures import State
     from litestar.params import Dependency, Parameter
 
 
@@ -78,6 +81,63 @@ class AuthController(Controller):
     ) -> None:
         request.clear_session()
         return
+
+    @get(
+        operation_id="AuthoriseUser",
+        name="auth:authorise",
+        summary="Authorise User",
+        description="Authorise User",
+        path=AuthURL.AUTHORIZE.value,
+        exclude_from_auth=True,
+    )
+    async def authorise(self, state: State) -> Redirect:
+        flow = GoogleOAuth2FlowService.from_client_secrets_file(
+            ".creds/google_secrets.json", scope=["openid", "email", "profile"]
+        )
+        redirect_uri = flow.client_config["redirect_uris"]
+        flow.redirect_uri = redirect_uri if isinstance(redirect_uri, str) else redirect_uri[0]
+        url, flow_state, nonce = flow.authorization_url()
+
+        # Save nonce and state value for further validation
+        state["state"] = flow_state
+        state["nonce"] = nonce
+        return Redirect(url)
+
+    @get(
+        operation_id="OAuth2Callback",
+        name="auth:OAuth2Callback",
+        summary="Handle Token Fetching",
+        description="Token fetching and validation",
+        path=AuthURL.OAUTH_REDIRECT.value,
+        exclude_from_auth=True,
+    )
+    async def oauth2callback(self, request: Request[Any, Any, Any], state: State) -> None:
+        # Validate state parameter
+        param_state = request.query_params["state"]
+        if param_state != state["state"]:
+            raise PermissionDeniedException("Invalid state parameter")
+
+        # Get token flow
+        flow = cast(
+            GoogleOAuth2FlowService,
+            GoogleOAuth2FlowService.from_client_secrets_file(
+                ".creds/google_secrets.json", scope=["openid", "email", "profile"]
+            ),
+        )
+        # TODO: set to current uri
+        redirect_uri = flow.client_config["redirect_uris"]
+        flow.redirect_uri = redirect_uri if isinstance(redirect_uri, str) else redirect_uri[0]
+
+        # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+        authorization_response = str(request.url)
+        credentials = await flow.fetch_token(authorization_response=authorization_response)
+        session_data = {"credentials": credentials}
+
+        # Validate id token if present
+        if id_token_raw := credentials.get("id_token"):
+            id_decoded = await flow.verify_token(id_token_raw)
+            session_data["id_token"] = id_decoded
+        request.set_session(session_data)
 
 
 class UserController(Controller):

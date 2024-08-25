@@ -201,5 +201,5 @@ docstring-code-line-length = 90
 ]
 
 [[tool.mypy.overrides]]
-module = "google.*,google_auth_oauthlib.*,googleapiclient.*"
+module = "google.*,google_auth_oauthlib.*,googleapiclient.*,authlib.*"
 ignore_missing_imports = true
