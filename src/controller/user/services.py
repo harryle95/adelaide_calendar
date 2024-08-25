@@ -24,6 +24,18 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         self.model_type = User
 
     async def to_model(self, data: ModelDictT[User], operation: str | None = None) -> User:
+        """Utility method to convert between dto and model (sqlalchemy object). The counterpart is
+        to_schema
+
+        Convert `password` to `hashed_password` then return the object
+
+        Args:
+            data (ModelDictT[User]): dto data - must be converted to a dict.
+            operation (str | None, optional): Defaults to None.
+
+        Returns:
+            User: sqlalchemy User object
+        """
         if isinstance(data, dict) and "password" in data:
             password: bytes | str | None = data.pop("password", None)
             if password is not None:
@@ -32,6 +44,9 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
 
     async def authenticate(self, username: str, password: bytes | str) -> User:
         """Authenticate a user.
+
+        Try to retrieve a user based on either username or email. If the
+        user exists, check if password matches.
 
         Args:
             username (str): username or email

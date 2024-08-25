@@ -46,6 +46,19 @@ class AuthController(Controller):
     async def register_user(
         self, users_service: UserService, data: UserCreate, request: Request[Any, Any, Any]
     ) -> User:
+        """Create a new user.
+
+        Does not require login or superuser privillege. Fails if integrity checks fail - i.e. clashing username
+        Returns the user information and automatically login the user if successful.
+
+        Args:
+            users_service (UserService): user service layer
+            data (UserCreate): user data required to create a new user object
+            request (Request[Any, Any, Any]): litestar's Request object to set session
+
+        Returns:
+            User: created user data if operation is successful
+        """
         user_model = await users_service.to_model(data.to_dict())
         user = await users_service.create(user_model)
         request.set_session({"user_id": user.id})
@@ -65,6 +78,19 @@ class AuthController(Controller):
         data: UserLogin,
         request: Request[Any, Any, Any],
     ) -> User:
+        """Authenticate user, and if successful, login the user.
+
+        Does not require login or admin privillege. Fails if user does not exist on the database or the provided password is incorrect.
+        Returns user information and login the user if the operation is successful.
+
+        Args:
+            users_service (UserService): user service layer
+            data (UserLogin): login data
+            request (Request[Any, Any, Any]): request object to set session
+
+        Returns:
+            User: user information
+        """
         user = await users_service.authenticate(data.name_or_email, data.password)
         request.set_session({"user_id": user.id})
         return users_service.to_schema(user, schema_type=User)
@@ -80,6 +106,13 @@ class AuthController(Controller):
         self,
         request: Request[Any, Any, Any],
     ) -> None:
+        """Remove user from session
+
+        Requires user to be logged in.
+
+        Args:
+            request (Request[Any, Any, Any]): request object to clear session information
+        """
         request.clear_session()
         return
 
@@ -162,7 +195,16 @@ class UserController(Controller):
         users_service: UserService,
         filters: Annotated[list[FilterTypes], Dependency(skip_validation=True)],
     ) -> OffsetPagination[User]:
-        """List users."""
+        """Retrieve all users in the current database. Currently requires login to access this. Will require
+        admin privillege in the future
+
+        Args:
+            users_service (UserService): user service object
+            filters (Annotated[list[FilterTypes], Dependency, optional): filter object based on the data's fields. Defaults to True)].
+
+        Returns:
+            OffsetPagination[User]: pagination object
+        """
         results, total = await users_service.list_and_count(*filters)
         return users_service.to_schema(data=results, total=total, schema_type=User, filters=filters)
 
@@ -183,7 +225,15 @@ class UserController(Controller):
             ),
         ],
     ) -> User:
-        """Get a user."""
+        """Get user based on user id. Currently requires login. Will require admin privilege in the future
+
+        Args:
+            users_service (UserService): user service
+            user_id (Annotated[ UUID, Parameter, optional): user to search based on id. Defaults to "User ID", description="The user to retrieve.", ), ].
+
+        Returns:
+            User: matched user
+        """
         db_obj = await users_service.get(user_id)
         return users_service.to_schema(db_obj, schema_type=User)
 
@@ -204,7 +254,18 @@ class UserController(Controller):
             ),
         ],
     ) -> User:
-        """Create a new user."""
+        """Update user based on user id. Currently requires login. Will require admin privilege in the future.
+
+        This method is used to update username and avatar_url. Updating password has its own method
+
+        Args:
+            data (UserUpdate): update information
+            users_service (UserService): user service
+            user_id (Annotated[ UUID, Parameter, optional): user to search based on id. Defaults to "User ID", description="The user to retrieve.", ), ].
+
+        Returns:
+            User: matched user
+        """
         db_obj = await users_service.update(item_id=user_id, data=data.to_dict())
         return users_service.to_schema(db_obj, schema_type=User)
 
@@ -226,5 +287,10 @@ class UserController(Controller):
             ),
         ],
     ) -> None:
-        """Delete a user from the system."""
+        """Delete a user from database. Currently requires login privilege. Will require admin privilege in the future
+
+        Args:
+            users_service (UserService): user service object
+            user_id (Annotated[ UUID, Parameter, optional): _description_. Defaults to "User ID", description="The user to delete.", ), ].
+        """
         _ = await users_service.delete(user_id)
