@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import httpx
-from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from advanced_alchemy.service import ModelDictT, SQLAlchemyAsyncRepositoryService
 from authlib.common.security import generate_token
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.jose import jwt
@@ -13,6 +13,7 @@ from litestar.exceptions import PermissionDeniedException
 from src.controller.user.repositories import UserRepository
 from src.controller.user.schema import OAuth2Config
 from src.db.models.user import User
+from src.utils.crypt import hash_plain_text_password, validate_password
 
 __all__ = ("UserService",)
 
@@ -22,27 +23,41 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         self.repository = UserRepository(**kwargs)
         self.model_type = User
 
-    async def authenticate(self, email: str) -> User:
+    async def to_model(self, data: ModelDictT[User], operation: str | None = None) -> User:
+        if isinstance(data, dict) and "password" in data:
+            password: bytes | str | None = data.pop("password", None)
+            if password is not None:
+                data.update({"hashed_password": await hash_plain_text_password(password)})
+        return await super().to_model(data, operation)
+
+    async def authenticate(self, username: str, password: bytes | str) -> User:
         """Authenticate a user.
 
         Args:
-            email (str): user email
+            username (str): _description_
+            password (str | bytes): _description_
 
         Raises:
-            NotAuthorizedException: Raised when the user doesn't exist
+            NotAuthorizedException: Raised when the user doesn't exist, isn't verified, or is not active.
 
         Returns:
             User: The user object
         """
-        db_obj = await self.get_one_or_none(email=email)
+        db_obj = await self.get_one_or_none(email=username)
         if db_obj is None:
+            msg = "User not found or password invalid"
+            raise PermissionDeniedException(msg)
+        if db_obj.hashed_password is None:
+            msg = "User not found or password invalid."
+            raise PermissionDeniedException(msg)
+        if not await validate_password(password, db_obj.hashed_password):
             msg = "User not found or password invalid"
             raise PermissionDeniedException(msg)
         return db_obj
 
 
 class OAuth2FlowService:
-    """Identity Provider Agnostic OAuth2 Flow service. Performs code flow - in constrast to implicit/hybrid flow"""
+    """Identity Provider Agnostic OAuth2 Flow service. Performs code flow - in contrast to implicit/hybrid flow"""
 
     OAUTH2_CERT_URL: str  # URL to public key for jwt decode
     OAUTH2_ISSUERS: str | Sequence[str]  # Identity of Issuer for jwt validation
@@ -55,9 +70,10 @@ class OAuth2FlowService:
         code_verifier: str | None = None,
         autogenerate_code_verifier: bool = True,
     ) -> None:
+        if redirect_uri:
+            session.redirect_uri = redirect_uri
         self.session = session
         self.client_config = client_config
-        self.redirect_uri = redirect_uri
         self.code_verifier = code_verifier
         self.autogenerate_code_verifier = autogenerate_code_verifier
         self._credentials: Mapping[str, str] | None = None
@@ -188,9 +204,8 @@ class OAuth2FlowService:
                 :meth:`credentials` to obtain a
                 :class:`~google.auth.credentials.Credentials` instance.
         """
-        self._credentials = cast(
-            Mapping[str, str], await self.session.fetch_token(url=self.client_config["token_uri"], **kwargs)
-        )
+        credentials = await self.session.fetch_token(url=self.client_config["token_uri"], **kwargs)  # pyright: ignore
+        self._credentials = cast(Mapping[str, str], credentials)
         return self._credentials
 
     async def _fetch_certs(self, certs_url: str) -> Mapping[str, str]:
