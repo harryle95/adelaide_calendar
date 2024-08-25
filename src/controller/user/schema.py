@@ -1,3 +1,4 @@
+from typing import NotRequired, Required, TypedDict
 from uuid import UUID
 
 from src.utils.schema import CamelizedBaseStruct
@@ -17,3 +18,13 @@ class User(UserCreate):
 
 
 UserLogin = UserCreate
+
+
+class OAuth2Config(TypedDict):
+    client_id: Required[str]
+    project_id: NotRequired[str]
+    auth_uri: Required[str]
+    token_uri: Required[str]
+    cert_url: NotRequired[str]
+    client_secret: Required[str]
+    redirect_uris: Required[str]

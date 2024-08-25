@@ -11,7 +11,7 @@ class AuthURL(Enum):
     LOGIN = "/auth/login"
     LOGOUT = "/auth/logout"
     AUTHORIZE = "/auth/authorize"
-    OAUTH_REDIRECT = "/auth/oauth2Redirect"
+    OAUTH_REDIRECT = "/auth/oauth2callback"
     REVOKE = "/auth/revoke"
 
 
