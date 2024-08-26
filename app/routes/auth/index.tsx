@@ -11,6 +11,7 @@ const route: RouteObject[] = [
   {
     path: "/auth",
     element: <Page />,
+
     children: [
       { path: "/auth", element: <LoginForm />, action: UserService.LoginUser },
       {
