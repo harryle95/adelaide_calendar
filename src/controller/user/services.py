@@ -2,6 +2,7 @@ import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, cast
+from uuid import UUID
 
 import httpx
 from advanced_alchemy.service import ModelDictT, SQLAlchemyAsyncRepositoryService
@@ -69,6 +70,38 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         if not await validate_password(password, db_obj.hashed_password):
             raise PermissionDeniedException("User not found or password invalid")
         return db_obj
+
+    async def update_password(self, user_id: UUID, old_password: str | None, new_password: str) -> User:
+        """Update user password.
+
+        If provided `old_password` matches the previous password, will update user info using
+        the new password. If `old_password` is not provided, will simply update user info.
+
+        `old_password` must be provided in the standard update password flow - i.e. updating password from inside a browser.
+        `old_password` does not need to be provided when the update password flow is based on a trusted flow. - i.e. updating
+        from an updating url sent from the server to the user's authenticated email.
+
+        Args:
+            user_id (UUID): user id to retrieve user
+            old_password (str | None): previous password provided by user
+            new_password (str): new password provided by user
+
+        Raises:
+            PermissionDeniedException: if no user matches user_id. Can happen if the user has been deleted
+            PermissionDeniedException: if the provided `old_password` does not match the previous password.
+
+        Returns:
+            User: user with updated password
+        """
+        user_obj = await self.get_one_or_none(id=user_id)
+        # For preventing race condition
+        if not user_obj:
+            raise PermissionDeniedException("User does not exist")
+        if old_password and not validate_password(old_password, user_obj.hashed_password):
+            raise PermissionDeniedException("Old password does not match")
+        new_hashed_password = await hash_plain_text_password(new_password)
+        user_obj.hashed_password = new_hashed_password
+        return user_obj
 
 
 class OAuth2FlowService:

@@ -20,3 +20,4 @@ class UserURL(Enum):
     ME = "/user/me"
     NO_ID = "/user"
     BY_ID = "/user/{user_id:uuid}"
+    UPDATE_PASSWORD = "/user/password"  # noqa: S105
