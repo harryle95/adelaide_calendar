@@ -12,10 +12,8 @@ from litestar.response import Redirect
 from src.controller.user.dependencies import provide_users_service
 from src.controller.user.schema import User, UserChangePassword, UserCreate, UserLogin, UserUpdate
 from src.controller.user.services import GoogleOAuth2FlowService, UserService
-from src.controller.user.urls import AuthURL, UserURL
-
-__all__ = ("UserController",)
-
+from src.controller.user.urls import AdminURL, AuthURL, MeURL
+from src.db.models.user import User as UserModel
 
 if TYPE_CHECKING:
     from uuid import UUID
@@ -24,6 +22,13 @@ if TYPE_CHECKING:
     from advanced_alchemy.service import OffsetPagination
     from litestar.datastructures import State
     from litestar.params import Dependency, Parameter
+
+
+__all__ = (
+    "AdminController",
+    "AuthController",
+    "MeController",
+)
 
 
 class AuthController(Controller):
@@ -174,10 +179,10 @@ class AuthController(Controller):
         request.set_session(session_data)
 
 
-class UserController(Controller):
-    """User Account Controller."""
+class AdminController(Controller):
+    """Admin Account Controller."""
 
-    tags = ["User Accounts"]
+    tags = ["Admin Accounts"]
     dependencies = {"users_service": Provide(provide_users_service)}
     signature_namespace = {"UserService": UserService}
     dto = None
@@ -188,7 +193,7 @@ class UserController(Controller):
         name="users:list",
         summary="List Users",
         description="Retrieve the users.",
-        path=UserURL.LIST.value,
+        path=AdminURL.LIST.value,
     )
     async def list_users(
         self,
@@ -211,7 +216,7 @@ class UserController(Controller):
     @get(
         operation_id="GetUser",
         name="users:get",
-        path=UserURL.BY_ID.value,
+        path=AdminURL.BY_ID.value,
         summary="Retrieve the details of a user.",
     )
     async def get_user(
@@ -240,7 +245,7 @@ class UserController(Controller):
     @patch(
         operation_id="UpdateUser",
         name="users:update",
-        path=UserURL.BY_ID.value,
+        path=AdminURL.BY_ID.value,
     )
     async def update_user(
         self,
@@ -272,7 +277,7 @@ class UserController(Controller):
     @delete(
         operation_id="DeleteUser",
         name="users:delete",
-        path=UserURL.BY_ID.value,
+        path=AdminURL.BY_ID.value,
         summary="Remove User",
         description="Removes a user and all associated data from the system.",
     )
@@ -295,10 +300,10 @@ class UserController(Controller):
         """
         _ = await users_service.delete(user_id)
 
-    @patch(
+    @post(
         operation_id="UpdatePassword",
         name="users:updatePassword",
-        path=UserURL.UPDATE_PASSWORD.value,
+        path=AdminURL.UPDATE_PASSWORD.value,
     )
     async def update_password(
         self,
@@ -324,6 +329,87 @@ class UserController(Controller):
         Returns:
             User: matched user
         """
+        db_obj = await users_service.update_password(
+            user_id=user_id, old_password=data.old_password, new_password=data.new_password
+        )
+        return users_service.to_schema(db_obj, schema_type=User)
+
+
+class MeController(Controller):
+    """Personal Account Controller."""
+
+    tags = ["Personal Accounts"]
+    dependencies = {"users_service": Provide(provide_users_service)}
+    signature_namespace = {"UserService": UserService}
+    dto = None
+    return_dto = None
+
+    @get(
+        operation_id="GetMe",
+        name="me:get",
+        path=MeURL.BASE.value,
+        summary="Retrieve the details of the currently logged in user.",
+        exclude_from_auth=True,
+    )
+    async def get_my_profile(
+        self,
+        request: Request[UserModel, Any, Any],
+        users_service: UserService,
+    ) -> User:
+        """Get profile of currently logged in user.
+
+        Args:
+            request (Request[UserModel, Any, Any]): request class
+            users_service (UserService): user service class
+
+        Returns:
+            User: logged in user information
+        """
+        if request.user:
+            return users_service.to_schema(request.user, schema_type=User)
+        return User(id=None, email=None, name=None, is_superuser=False, is_verified=False, avatar_url=None)
+
+    @patch(
+        operation_id="UpdateMe",
+        name="me:update",
+        path=MeURL.BASE.value,
+    )
+    async def update_me(
+        self, data: UserUpdate, users_service: UserService, request: Request[UserModel, Any, Any]
+    ) -> User:
+        """Update data for the current user.
+
+        Args:
+            data (UserUpdate): _description_
+            users_service (UserService): _description_
+            request (Request[UserModel, Any, Any]): _description_
+
+        Returns:
+            User: _description_
+        """
+        user_id = request.user.id
+        db_obj = await users_service.update(item_id=user_id, data=data.to_dict())
+        return users_service.to_schema(db_obj, schema_type=User)
+
+    @post(
+        operation_id="UpdateMyPassword",
+        name="me:updatePassword",
+        path=MeURL.UPDATE_PASSWORD.value,
+    )
+    async def update_my_password(
+        self, data: UserChangePassword, users_service: UserService, request: Request[UserModel, Any, Any]
+    ) -> User:
+        """Update the current user's password
+
+        Args:
+            data (UserChangePassword): contains old and new passwords
+            users_service (UserService): user service
+            request (Request[UserModel, Any, Any]): request object
+
+        Returns:
+            User: updated user data
+        """
+        user_id = request.user.id
         db_obj = await users_service.update_password(
             user_id=user_id, old_password=data.old_password, new_password=data.new_password
         )

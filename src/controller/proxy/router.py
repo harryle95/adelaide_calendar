@@ -28,7 +28,7 @@ class ProxyController(Controller):
         return await ProxyQueryService.campus()
 
     @get(
-        operation_id="Get Academic Level Info",
+        operation_id="GetAcademicLevelInfo",
         name="proxy:academicCareer",
         summary="Get Academic Level Info",
         description="Get Academic Level Info",
@@ -38,7 +38,7 @@ class ProxyController(Controller):
         return await ProxyQueryService.academic_career()
 
     @get(
-        operation_id="Get Term Info",
+        operation_id="GetTermInfo",
         name="proxy:term",
         summary="Get Term Info",
         description="Get Term Info",
@@ -48,7 +48,7 @@ class ProxyController(Controller):
         return await ProxyQueryService.term()
 
     @get(
-        operation_id="Get Subject Info",
+        operation_id="GetSubjectInfo",
         name="proxy:subjects",
         summary="Get Subject Info",
         description="Get Subject Info",
@@ -58,7 +58,7 @@ class ProxyController(Controller):
         return await ProxyQueryService.subjects()
 
     @get(
-        operation_id="Get Course Info",
+        operation_id="GetCourseInfo",
         name="proxy:course",
         summary="Get Course Info",
         description="Get Course Info",

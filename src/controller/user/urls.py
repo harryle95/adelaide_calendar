@@ -1,8 +1,9 @@
 from enum import Enum
 
 __all__ = (
+    "AdminURL",
     "AuthURL",
-    "UserURL",
+    "MeURL",
 )
 
 
@@ -15,9 +16,13 @@ class AuthURL(Enum):
     REVOKE = "/auth/revoke"
 
 
-class UserURL(Enum):
-    LIST = "/users"
-    ME = "/user/me"
-    NO_ID = "/user"
-    BY_ID = "/user/{user_id:uuid}"
-    UPDATE_PASSWORD = "/user/password"  # noqa: S105
+class AdminURL(Enum):
+    LIST = "/admin/users"
+    NO_ID = "/admin/user"
+    BY_ID = "/admin/user/{user_id:uuid}"
+    UPDATE_PASSWORD = "/admin/user/password"  # noqa: S105
+
+
+class MeURL(Enum):
+    BASE = "/me"
+    UPDATE_PASSWORD = "/me/password"  # noqa: S105

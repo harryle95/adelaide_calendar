@@ -97,8 +97,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         # For preventing race condition
         if not user_obj:
             raise PermissionDeniedException("User does not exist")
-        if old_password and not validate_password(old_password, user_obj.hashed_password):
-            raise PermissionDeniedException("Old password does not match")
+        if old_password:
+            matched = await validate_password(old_password, user_obj.hashed_password)
+            if not matched:
+                raise PermissionDeniedException("Old password does not match")
         new_hashed_password = await hash_plain_text_password(new_password)
         user_obj.hashed_password = new_hashed_password
         return user_obj
