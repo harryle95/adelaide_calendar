@@ -8,7 +8,7 @@ const throwOnError: Middleware = {
       const body = response.headers.get("content-type")?.includes("json")
         ? await response.clone().json()
         : await response.clone().text();
-      throw new Error(body);
+      throw new Error(body["status_code"]);
     }
     return undefined;
   },
