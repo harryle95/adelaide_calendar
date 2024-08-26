@@ -18,9 +18,9 @@ __all__ = (
 
 
 class User(CamelizedBaseStruct):
-    id: UUID
+    id: UUID | None
     email: str | None
-    name: str
+    name: str | None
     is_superuser: bool
     is_verified: bool
     avatar_url: str | None

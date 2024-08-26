@@ -19,9 +19,9 @@ function SignUpForm() {
   return (
     <Form.Root className={rootClass}>
       <Form.Header className={headerClass} title="Sign-Up" />
-      <Form.Body className={bodyClass}>
+      <Form.Body className={bodyClass} method="POST">
         <Form.InputGroup
-          name="username"
+          name="name"
           labelClassName={labelClass}
           inputClassName={inputClass}
           required
@@ -45,11 +45,13 @@ function LoginForm() {
   return (
     <Form.Root className={rootClass}>
       <Form.Header className={headerClass} title="Login" />
-      <Form.Body className={bodyClass}>
+      <Form.Body className={bodyClass} method="POST">
         <Form.InputGroup
-          name="username"
+          name="nameOrEmail"
           labelClassName={labelClass}
           inputClassName={inputClass}
+          labelTitle="Username or Email"
+          placeholder="Enter username or email address"
           required
         />
         <Form.InputGroupWithLink
