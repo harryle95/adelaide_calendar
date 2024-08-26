@@ -10,7 +10,7 @@ from litestar.exceptions import PermissionDeniedException
 from litestar.response import Redirect
 
 from src.controller.user.dependencies import provide_users_service
-from src.controller.user.schema import User, UserCreate, UserLogin, UserUpdate
+from src.controller.user.schema import User, UserChangePassword, UserCreate, UserLogin, UserUpdate
 from src.controller.user.services import GoogleOAuth2FlowService, UserService
 from src.controller.user.urls import AuthURL, UserURL
 
@@ -294,3 +294,37 @@ class UserController(Controller):
             user_id (Annotated[ UUID, Parameter, optional): _description_. Defaults to "User ID", description="The user to delete.", ), ].
         """
         _ = await users_service.delete(user_id)
+
+    @patch(
+        operation_id="UpdatePassword",
+        name="users:updatePassword",
+        path=UserURL.UPDATE_PASSWORD.value,
+    )
+    async def update_password(
+        self,
+        data: UserChangePassword,
+        users_service: UserService,
+        user_id: Annotated[
+            UUID,
+            Parameter(
+                title="User ID",
+                description="The user to update.",
+            ),
+        ],
+    ) -> User:
+        """Update user based on user id. Currently requires login. Will require admin privilege in the future.
+
+        This method is used to update username and avatar_url. Updating password has its own method
+
+        Args:
+            data (UserUpdate): update information
+            users_service (UserService): user service
+            user_id (Annotated[ UUID, Parameter, optional): user to search based on id. Defaults to "User ID", description="The user to retrieve.", ), ].
+
+        Returns:
+            User: matched user
+        """
+        db_obj = await users_service.update_password(
+            user_id=user_id, old_password=data.old_password, new_password=data.new_password
+        )
+        return users_service.to_schema(db_obj, schema_type=User)
