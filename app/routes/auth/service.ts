@@ -1,6 +1,6 @@
 import { redirect } from "react-router-dom";
 import type { components } from "../../service";
-import { UserRepository } from "./repository";
+import { UserRepository } from "../../service";
 
 type SCHEMA = components["schemas"];
 
@@ -16,28 +16,17 @@ const UserService = {
       await request.formData()
     ) as SCHEMA["UserCreate"];
     await UserRepository.RegisterUser(data);
-    return redirect("/");
+    return redirect("/me");
   },
   LoginUser: async ({ request }: { request: Request }) => {
     const data = formDataToObject(
       await request.formData()
     ) as SCHEMA["UserLogin"];
     await UserRepository.LoginUser(data);
-    return redirect("/");
+    return redirect("/me");
   },
   LogoutUser: async () => {
     await UserRepository.LogoutUser();
-    return redirect("/");
-  },
-  GetMe: async () => {
-    return await UserRepository.GetMe();
-  },
-  UpdateMe: async (data: SCHEMA["UserUpdate"]) => {
-    await UserRepository.UpdateMe(data);
-    return redirect("/");
-  },
-  UpdateMyPassword: async (data: SCHEMA["UserChangePassword"]) => {
-    await UserRepository.UpdateMyPassword(data);
     return redirect("/");
   },
 };

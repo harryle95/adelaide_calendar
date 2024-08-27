@@ -25,7 +25,8 @@ async def retrieve_user_handler(
     session: dict[str, Any], connection: ASGIConnection[HandlerT, UserT, AuthT, StateT]
 ) -> User | None:
     service = await anext(provide_users_service(alchemy.provide_session(connection.app.state, connection.scope)))
-    return await service.get_one_or_none(id=session.get("user_id"))
+    session_id = session.get("user_id")
+    return await service.get_one_or_none(id=session_id)
 
 
 session_auth = SessionAuth[User, ServerSideSessionBackend](
