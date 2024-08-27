@@ -11,6 +11,8 @@
     "openapi": "npx openapi-typescript http://127.0.0.1:8080/schema/openapi.json -o app/service/schema.d.ts"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-tooltip": "^1.1.2",
     "openapi-fetch": "^0.11.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
