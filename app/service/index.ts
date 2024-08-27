@@ -58,5 +58,5 @@ const MeRepository = {
 };
 
 export { UserRepository, MeRepository };
-
+export type { SCHEMA };
 export default client;

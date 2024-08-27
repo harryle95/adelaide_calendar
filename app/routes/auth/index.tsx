@@ -4,8 +4,9 @@ import Page, {
   ForgotPasswordForm,
   LoginForm,
   SignUpForm,
+  Profile,
 } from "./page";
-import { UserService } from "./service";
+import { MeService, UserService } from "./service";
 
 const route: RouteObject[] = [
   {
@@ -21,6 +22,7 @@ const route: RouteObject[] = [
       },
       { path: "/auth/forgotPassword", element: <ForgotPasswordForm /> },
       { path: "/auth/changePassword", element: <ChangePasswordForm /> },
+      { path: "/auth/me", element: <Profile />, loader: MeService.GetMe },
     ],
   },
 ];

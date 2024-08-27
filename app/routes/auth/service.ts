@@ -1,8 +1,6 @@
 import { redirect } from "react-router-dom";
-import type { components } from "../../service";
-import { UserRepository } from "../../service";
-
-type SCHEMA = components["schemas"];
+import type { SCHEMA } from "../../service";
+import { UserRepository, MeRepository } from "../../service";
 
 function formDataToObject(data: FormData) {
   const result: { [key: string]: FormDataEntryValue } = {};
@@ -31,4 +29,24 @@ const UserService = {
   },
 };
 
-export { UserService, formDataToObject };
+const MeService = {
+  GetMe: async () => {
+    try {
+      const result = await MeRepository.GetMe();
+      return result.data;
+    } catch (error) {
+      console.log(error);
+      return redirect("/auth/");
+    }
+  },
+  UpdateMe: async (data: SCHEMA["UserUpdate"]) => {
+    await MeRepository.UpdateMe(data);
+    return redirect("/");
+  },
+  UpdateMyPassword: async (data: SCHEMA["UserChangePassword"]) => {
+    await MeRepository.UpdateMyPassword(data);
+    return redirect("/");
+  },
+};
+
+export { UserService, formDataToObject, MeService };

@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
 import * as Form from "./form";
 import { Link } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
+import type { SCHEMA } from "../../service";
 
-const pageClass =
-  "bg-gradient-to-t from-indigo-500 via-purple-500 to-pink-500 h-full w-full flex justify-center items-center";
 const rootClass = "p-7 rounded-md flex flex-col bg-white";
 const headerClass = "flex justify-center items-center font-bold text-3xl p-6";
 const bodyClass = "flex flex-col gap-y-3";
@@ -53,6 +53,7 @@ function LoginForm() {
           labelTitle="Username or Email"
           placeholder="Enter username or email address"
           required
+          autoComplete="name"
         />
         <Form.InputGroupWithLink
           name="password"
@@ -63,6 +64,7 @@ function LoginForm() {
           linkTitle="ForgotPassword?"
           linkClassName={linkClass}
           className="flex justify-between"
+          autoComplete="current-password"
           required
         />
         <button type="submit" className={buttonClass}>
@@ -138,13 +140,25 @@ function ChangePasswordForm() {
   );
 }
 
+function Profile() {
+  const profile = useLoaderData() as SCHEMA["User"];
+  const displayName = profile.name ? profile.name : profile.email;
+  return <div>Welcome back {displayName}</div>;
+}
+
 function Page() {
   return (
-    <div className={pageClass}>
+    <div className="h-full w-full flex justify-center items-center">
       <Outlet />
     </div>
   );
 }
 
 export default Page;
-export { SignUpForm, LoginForm, ForgotPasswordForm, ChangePasswordForm };
+export {
+  SignUpForm,
+  LoginForm,
+  ForgotPasswordForm,
+  ChangePasswordForm,
+  Profile,
+};

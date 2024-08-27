@@ -6,6 +6,7 @@
     "Litestar",
     "msgspec",
     "saqlalchemy",
+    "signup",
     "sqlalchemy"
   ],
   "makefile.configureOnOpen": false
