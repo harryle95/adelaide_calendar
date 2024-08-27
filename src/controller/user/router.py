@@ -349,7 +349,6 @@ class MeController(Controller):
         name="me:get",
         path=MeURL.BASE.value,
         summary="Retrieve the details of the currently logged in user.",
-        exclude_from_auth=True,
     )
     async def get_my_profile(
         self,
