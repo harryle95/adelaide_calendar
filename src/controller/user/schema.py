@@ -33,6 +33,7 @@ class UserLogin(CamelizedBaseStruct):
 
 class UserCreate(CamelizedBaseStruct):
     name: str
+    email: str
     password: str
 
 
