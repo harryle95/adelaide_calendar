@@ -1,0 +1,46 @@
+.formRoot {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.formLabel {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.formLabelHeader {
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.formLabelGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.formInput,
+.formValidationError {
+  padding: 0.35rem 0.75rem;
+}
+.formInput {
+  border-width: 2px;
+  border-radius: 0.375rem;
+}
+
+.formValidationError {
+  color: red;
+}
+
+.formSubmitButton {
+  border: 1px;
+  border-radius: 0.75rem;
+  margin: 0.25rem 0;
+  background-color: #3b82f6;
+  color: white;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}

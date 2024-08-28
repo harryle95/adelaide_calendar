@@ -3,10 +3,11 @@ import Page, {
   ChangePasswordForm,
   ForgotPasswordForm,
   LoginForm,
-  SignUpForm,
   Profile,
 } from "./page";
 import { MeService, UserService } from "./service";
+import RegisterForm from "./signup";
+import "./style.css";
 
 const route: RouteObject[] = [
   {
@@ -17,7 +18,7 @@ const route: RouteObject[] = [
       { path: "/auth", element: <LoginForm />, action: UserService.LoginUser },
       {
         path: "/auth/signup",
-        element: <SignUpForm />,
+        element: <RegisterForm />,
         action: UserService.RegisterUser,
       },
       { path: "/auth/forgotPassword", element: <ForgotPasswordForm /> },
