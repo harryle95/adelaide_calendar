@@ -51,8 +51,9 @@ def exception_to_http_response(
     http_exc: type[HTTPException]
     if isinstance(exc, NotFoundError):
         http_exc = NotFoundException
-    elif isinstance(exc, ConflictError | RepositoryError | IntegrityError):
+        return create_exception_response(request, http_exc(detail=str(exc.detail)))
+    if isinstance(exc, ConflictError | RepositoryError | IntegrityError):
         http_exc = HTTPConflictException
-    else:
-        http_exc = InternalServerException
+        return create_exception_response(request, http_exc(detail=str(exc.detail)))
+    http_exc = InternalServerException
     return create_exception_response(request, http_exc(detail=str(exc.__cause__)))

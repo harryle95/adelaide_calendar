@@ -5,6 +5,7 @@ from typing import Any, cast
 from uuid import UUID
 
 import httpx
+from advanced_alchemy.exceptions import ConflictError, IntegrityError
 from advanced_alchemy.service import ModelDictT, SQLAlchemyAsyncRepositoryService
 from authlib.common.security import generate_token
 from authlib.integrations.httpx_client import AsyncOAuth2Client
@@ -12,7 +13,7 @@ from authlib.jose import jwt
 from litestar.exceptions import PermissionDeniedException
 
 from src.controller.user.repositories import UserRepository
-from src.controller.user.schema import OAuth2Config
+from src.controller.user.schema import OAuth2Config, UserCreate
 from src.db.models.user import User
 from src.utils.crypt import hash_plain_text_password, validate_password
 
@@ -104,6 +105,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         new_hashed_password = await hash_plain_text_password(new_password)
         user_obj.hashed_password = new_hashed_password
         return user_obj
+
+    async def register(self, data: UserCreate) -> User:
+        user_model = await self.to_model(data.to_dict())
+        return await self.create(user_model, error_messages={"foreign_key": "Username or email already exists"})
 
 
 class OAuth2FlowService:
