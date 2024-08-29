@@ -51,7 +51,7 @@ analysis = [
 
 [tool.codespell]
 ignore-words-list = "selectin,UE,ue"
-skip = 'pdm.lock,./assets/'
+skip = 'pdm.lock,./assets/,package-lock.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
