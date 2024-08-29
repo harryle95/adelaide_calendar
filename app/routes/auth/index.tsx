@@ -1,13 +1,14 @@
 import { RouteObject } from "react-router-dom";
-import Page, {
-  ChangePasswordForm,
-  ForgotPasswordForm,
-  LoginForm,
-  Profile,
+import {
+  RegisterPage,
+  LoginPage,
+  ProfilePage,
+  ChangePasswordPage,
+  ForgotPasswordPage,
+  Page,
 } from "./page";
-import { MeService, UserService } from "./service";
-import RegisterForm from "./signup";
 import "./style.css";
+import { MeService, UserService } from "./service";
 
 const route: RouteObject[] = [
   {
@@ -15,15 +16,23 @@ const route: RouteObject[] = [
     element: <Page />,
 
     children: [
-      { path: "/auth", element: <LoginForm />, action: UserService.LoginUser },
+      { path: "/auth", element: <LoginPage />, action: UserService.LoginUser },
       {
         path: "/auth/signup",
-        element: <RegisterForm />,
+        element: <RegisterPage />,
         action: UserService.RegisterUser,
       },
-      { path: "/auth/forgotPassword", element: <ForgotPasswordForm /> },
-      { path: "/auth/changePassword", element: <ChangePasswordForm /> },
-      { path: "/auth/me", element: <Profile />, loader: MeService.GetMe },
+      { path: "/auth/forgotPassword", element: <ForgotPasswordPage /> },
+      {
+        path: "/auth/changePassword",
+        element: <ChangePasswordPage />,
+        action: MeService.UpdateMyPassword,
+      },
+      {
+        path: "/auth/me",
+        element: <ProfilePage />,
+        loader: MeService.GetMe,
+      },
     ],
   },
 ];
