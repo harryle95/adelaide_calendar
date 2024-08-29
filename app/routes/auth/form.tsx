@@ -77,7 +77,7 @@ const Root = <T extends FieldValues>(props: RootProps<T>) => {
   };
   return (
     <FormProvider {...methods}>
-      <p>{error?.message}</p>
+      {error?.message && <p className="formServerError">{error.message}</p>}
       <form className="formRoot" onSubmit={methods.handleSubmit(onSubmit)}>
         {children}
       </form>

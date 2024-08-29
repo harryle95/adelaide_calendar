@@ -58,7 +58,6 @@ function RegisterForm() {
           placeholder="Enter username"
           leftSectionInput={<PersonIcon className="TextInputLeftIcon" />}
         />
-
         <TextInput
           name="password"
           label="Password"
@@ -67,7 +66,6 @@ function RegisterForm() {
           placeholder="Enter password"
           leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
         />
-
         <TextInput
           name="email"
           label="Email"
@@ -76,7 +74,6 @@ function RegisterForm() {
           placeholder="Enter email"
           leftSectionInput={<EnvelopeOpenIcon className="TextInputLeftIcon" />}
         />
-
         <button type="submit" className="formSubmitButton">
           Submit
         </button>
@@ -99,16 +96,17 @@ function LoginForm() {
           name="nameOrEmail"
           label="Username or Email"
           labelAsterisk={true}
+          required={true}
           placeholder="Enter username or email address"
           leftSectionInput={<PersonIcon className="TextInputLeftIcon" />}
         />
-
         <TextInput
           name="password"
           label="Password"
           labelAsterisk={true}
           type="password"
           placeholder="Enter password"
+          required={true}
           leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
           rightSectionLabel={
             <div className="TextInputLabelRightIcon">
@@ -116,7 +114,6 @@ function LoginForm() {
             </div>
           }
         />
-
         <button type="submit" className="formSubmitButton">
           Submit
         </button>
@@ -141,6 +138,7 @@ function ChangePasswordForm() {
           type="password"
           labelAsterisk={true}
           placeholder="Enter your old password"
+          required={true}
           leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
         />
 
@@ -150,6 +148,7 @@ function ChangePasswordForm() {
           labelAsterisk={true}
           type="password"
           placeholder="Enter your new password"
+          required={true}
           leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
         />
 
@@ -172,6 +171,7 @@ function ForgotPasswordForm() {
           labelAsterisk={true}
           type="email"
           placeholder="Enter your email"
+          required={true}
           leftSectionInput={<EnvelopeOpenIcon className="TextInputLeftIcon" />}
         />
         <button type="submit" className="formSubmitButton">
