@@ -7,13 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import { Root, TextInput } from "./form";
 import { useAuthContext } from "../../service";
-import {
-  Await,
-  Link,
-  useLoaderData,
-  useNavigate,
-  useNavigation,
-} from "react-router-dom";
+import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { SCHEMA } from "../../service";
 import React from "react";
 
@@ -182,16 +176,20 @@ function ForgotPasswordForm() {
   );
 }
 
-const useRequireLoggedIn = (profile?: SCHEMA["User"]) => {
+const useRequireLoggedIn = () => {
+  // Hooks
+  const { user } = useAuthContext("LoginPage");
+  const navigation = useNavigation();
   const navigate = useNavigate();
-  const { setUser } = useAuthContext("Auth");
-  React.useLayoutEffect(() => {
-    if (!profile?.id) {
-      navigate("/auth/");
-    } else {
-      setUser(profile);
+  const userId = user ? user.id : "";
+
+  // Redirect to logged in
+  React.useEffect(() => {
+    if (!userId) {
+      navigate("/auth");
     }
-  }, [JSON.stringify(profile), navigate, setUser]);
+  }, [userId, navigate]);
+  return { navigation, user };
 };
 
 const useRequireLoggedOut = () => {
@@ -231,21 +229,13 @@ function ForgotPasswordPage() {
 }
 
 function Profile({ profile }: { profile: SCHEMA["User"] }) {
-  useRequireLoggedIn(profile);
-
   const displayName = profile.name ? profile.name : profile.email;
   return <p>Logged in as {displayName}</p>;
 }
 
 function ProfilePage() {
-  const result = useLoaderData() as any;
-  return (
-    <React.Suspense>
-      <Await resolve={result.user}>
-        {(user: SCHEMA["User"]) => <Profile profile={user} />}
-      </Await>
-    </React.Suspense>
-  );
+  const { user, navigation } = useRequireLoggedIn();
+  return <>{navigation.state === "idle" && <Profile profile={user!} />}</>;
 }
 
 import { Outlet } from "react-router-dom";
