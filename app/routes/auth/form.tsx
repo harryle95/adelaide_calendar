@@ -1,128 +1,106 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { FormProps, Link } from "react-router-dom";
-import { Form } from "react-router-dom";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  useForm,
+  FormProvider,
+  useFormContext,
+  FieldValues,
+} from "react-hook-form";
+import { SubmitOptions, useActionData, useSubmit } from "react-router-dom";
 
-type RootProps = React.ComponentPropsWithoutRef<"div">;
-interface HeaderProps extends React.ComponentPropsWithoutRef<"h1"> {
-  title: string;
-}
-interface FooterProps {
+interface RootProps<T extends FieldValues> extends SubmitOptions {
+  schema: z.ZodType<T>;
   children: React.ReactNode;
 }
-interface InputProps
-  extends Omit<React.ComponentPropsWithoutRef<"input">, "name" | "id"> {
-  name: string;
-  labelClassName: string;
-  inputClassName: string;
-  labelTitle?: string;
+
+interface _TextInputProps extends React.ComponentPropsWithoutRef<"input"> {
+  error: React.ReactNode;
+  label: React.ReactNode;
+  labelAsterisk?: boolean;
+  description?: React.ReactNode;
+  rightSectionInput?: React.ReactNode;
+  rightSectionLabel?: React.ReactNode;
+  leftSectionInput?: React.ReactNode;
+  leftSectionLabel?: React.ReactNode;
 }
 
-function capitalise(name: string): string {
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-interface InputWithLinkProps extends InputProps {
-  linkTo: string;
-  linkTitle: string;
-  linkClassName: string;
-}
-
-const Root = (props: RootProps) => {
-  return <div {...props} />;
-};
-
-const Header = (props: HeaderProps) => {
-  const { title, ...other } = props;
-  return <h1 {...other}>{title}</h1>;
-};
-
-const Body = (props: FormProps) => {
-  return <Form {...props} />;
-};
-
-const Footer = (props: FooterProps) => {
-  return (
-    <>
-      <hr />
-      {props.children}
-    </>
-  );
-};
-
-const InputGroup = (props: InputProps) => {
-  const {
-    labelClassName,
-    inputClassName,
-    name,
-    labelTitle,
-    placeholder,
-    ...rest
-  } = props;
-  const isRequired = props.required ? "*" : "";
-  const formatedTitle = labelTitle
-    ? labelTitle + isRequired
-    : capitalise(name) + isRequired;
-  const formatedPlaceholder = placeholder ? placeholder : "Enter " + name;
-  return (
-    <>
-      <label htmlFor={name} className={labelClassName}>
-        {formatedTitle}
-      </label>
-      <input
-        id={name}
-        placeholder={formatedPlaceholder}
-        name={name}
-        {...rest}
-        className={inputClassName}
-      />
-    </>
-  );
-};
-
-const InputGroupWithLink = (props: InputWithLinkProps) => {
-  const {
-    linkTo,
-    linkTitle,
-    linkClassName,
-    className,
-    labelClassName,
-    inputClassName,
-    labelTitle,
-    placeholder,
-    name,
-    ...rest
-  } = props;
-  const isRequired = props.required ? "*" : "";
-  const formattedTitle = labelTitle
-    ? labelTitle + isRequired
-    : capitalise(name) + isRequired;
-  const formatedPlaceholder = placeholder ? placeholder : "Enter " + name;
-  return (
-    <>
-      <div className={className}>
-        <label htmlFor={name} className={labelClassName}>
-          {formattedTitle}
-        </label>
-        <Link to={linkTo} className={linkClassName}>
-          {linkTitle}
-        </Link>
+const _TextInput = React.forwardRef<HTMLInputElement, _TextInputProps>(
+  (props, ref) => {
+    const {
+      description,
+      error,
+      label,
+      labelAsterisk,
+      rightSectionInput,
+      rightSectionLabel,
+      leftSectionInput,
+      leftSectionLabel,
+      ...rest
+    } = props;
+    const id = React.useId();
+    return (
+      <div className="TextInputRoot">
+        <div className="TextInputLabelContainer">
+          {leftSectionLabel}
+          <label htmlFor={id} className="TextInputLabel">
+            {label}
+            {labelAsterisk ? "*" : ""}
+          </label>
+          {rightSectionLabel}
+        </div>
+        <p className="TextInputDescription">{description}</p>
+        <div className="TextInputContainer">
+          {leftSectionInput}
+          <input id={id} {...rest} className="TextInputInput" ref={ref} />
+          {rightSectionInput}
+        </div>
+        <p
+          className="TextInputDescription"
+          data-valid={error ? "invalid" : "valid"}
+        >
+          {error}
+        </p>
       </div>
-      <input
-        id={name}
-        placeholder={formatedPlaceholder}
-        name={name}
-        {...rest}
-        className={inputClassName}
-      />
-    </>
+    );
+  }
+);
+
+const Root = <T extends FieldValues>(props: RootProps<T>) => {
+  const { schema, children, ...options } = props;
+  const submit = useSubmit();
+  const error = useActionData() as any;
+  const methods = useForm<T>({ resolver: zodResolver(schema) });
+  const onSubmit = async (data: T) => {
+    submit(data, { ...options, encType: "application/json" });
+  };
+  return (
+    <FormProvider {...methods}>
+      <p>{error?.message}</p>
+      <form className="formRoot" onSubmit={methods.handleSubmit(onSubmit)}>
+        {children}
+      </form>
+    </FormProvider>
   );
 };
 
-export { Root, Header, Body, Footer, InputGroup, InputGroupWithLink };
-export type {
-  InputProps,
-  InputWithLinkProps,
-  RootProps,
-  HeaderProps,
-  FooterProps,
-};
+interface TextInputProps extends Omit<_TextInputProps, "error"> {
+  name: string;
+}
+
+function TextInput(props: TextInputProps) {
+  const { name, ...rest } = props;
+  const { formState, register } = useFormContext();
+  const error = formState.errors[name];
+  return (
+    <_TextInput
+      {...register(name)}
+      {...rest}
+      error={error?.message as string}
+    />
+  );
+}
+
+export { Root, TextInput };
+export type { TextInputProps };

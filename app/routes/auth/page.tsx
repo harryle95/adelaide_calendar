@@ -1,178 +1,270 @@
-import { Outlet } from "react-router-dom";
-import * as Form from "./form";
-import { Link } from "react-router-dom";
-import { useLoaderData } from "react-router-dom";
-import type { SCHEMA } from "../../service";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { z } from "zod";
+import {
+  EnvelopeOpenIcon,
+  KeyboardIcon,
+  PersonIcon,
+} from "@radix-ui/react-icons";
+import { Root, TextInput } from "./form";
+import { useAuthContext } from "../../service";
+import {
+  Await,
+  Link,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
+import { SCHEMA } from "../../service";
+import React from "react";
 
-const rootClass =
-  "p-7 rounded-md flex flex-col bg-white min-w-[500px] min-h-[400px] justify-between";
-const headerClass = "flex justify-center items-center font-bold text-3xl p-6";
-const bodyClass = "flex flex-col gap-y-4";
-const footerClass = "mt-3 flex items-center justify-center text-center";
-const labelClass = "font-medium flex justify-between";
-const inputClass = "px-2 py-1 rounded-md border-2 w-full";
-const buttonClass =
-  "mt-3 rounded-2xl px-4 py-2 fond-extrabold bg-blue-500 text-white";
-const linkClass = "text-blue-700 font-medium";
+const RegisterSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Name must be at least 2 characters long" })
+    .max(20, { message: "Name must be at most 20 characters long" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" })
+    .max(50, { message: "Password must be at most 50 characters long" }),
+  email: z.string().email(),
+});
 
-function SignUpForm() {
+const LoginSchema = z.object({
+  nameOrEmail: z.string(),
+  password: z.string(),
+});
+
+const ChangePasswordSchema = z.object({
+  oldPassword: z.string(),
+  newPassword: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" })
+    .max(50, { message: "Password must be at most 50 characters long" }),
+});
+
+const ForgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+function RegisterForm() {
   return (
     <>
-      <Form.Header className={headerClass} title="Sign-Up" />
-      <Form.Body className={bodyClass} method="POST">
-        <Form.InputGroup
+      <h1 className="formHeader">Sign-up</h1>
+      <Root schema={RegisterSchema} method="POST">
+        <TextInput
           name="name"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          required
+          label="Username"
+          labelAsterisk={true}
+          placeholder="Enter username"
+          leftSectionInput={<PersonIcon className="TextInputLeftIcon" />}
         />
-        <Form.InputGroup
+
+        <TextInput
           name="password"
+          label="Password"
+          labelAsterisk={true}
           type="password"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          required
+          placeholder="Enter password"
+          leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
         />
-        <button type="submit" className={buttonClass}>
-          Sign-up
+
+        <TextInput
+          name="email"
+          label="Email"
+          labelAsterisk={true}
+          type="email"
+          placeholder="Enter email"
+          leftSectionInput={<EnvelopeOpenIcon className="TextInputLeftIcon" />}
+        />
+
+        <button type="submit" className="formSubmitButton">
+          Submit
         </button>
-      </Form.Body>
+      </Root>
+      <div className="formFooter">
+        <div>
+          Already have an account? <Link to="/auth">Login</Link>
+        </div>
+      </div>
     </>
   );
 }
 
 function LoginForm() {
   return (
-    <>
-      <Form.Header className={headerClass} title="Login" />
-      <Form.Body className={bodyClass} method="POST">
-        <Form.InputGroup
+    <div>
+      <h1 className="formHeader">Login</h1>
+      <Root schema={LoginSchema} method="POST">
+        <TextInput
           name="nameOrEmail"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          labelTitle="Username or Email"
+          label="Username or Email"
+          labelAsterisk={true}
           placeholder="Enter username or email address"
-          required
-          autoComplete="name"
+          leftSectionInput={<PersonIcon className="TextInputLeftIcon" />}
         />
-        <Form.InputGroupWithLink
+
+        <TextInput
           name="password"
+          label="Password"
+          labelAsterisk={true}
           type="password"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          linkTo="./forgotPassword"
-          linkTitle="ForgotPassword?"
-          linkClassName={linkClass}
-          className="flex justify-between"
-          autoComplete="current-password"
-          required
+          placeholder="Enter password"
+          leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
+          rightSectionLabel={
+            <div className="TextInputLabelRightIcon">
+              <Link to="/auth/forgotPassword">Forgot Password?</Link>
+            </div>
+          }
         />
-        <button type="submit" className={buttonClass}>
-          Login
-        </button>
-      </Form.Body>
-      <Form.Footer>
-        <div className={footerClass}>
-          <div>
-            Need an account?{" "}
-            <Link to="./signup" className={linkClass}>
-              Sign-up
-            </Link>
-          </div>
-        </div>
-      </Form.Footer>
-    </>
-  );
-}
 
-function ForgotPasswordForm() {
-  return (
-    <>
-      <Form.Header className={headerClass} title="Reset Password" />
-
-      <Form.Body className={bodyClass}>
-        <Form.InputGroup
-          name="email"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          required
-        />
-        <button type="submit" className={buttonClass}>
+        <button type="submit" className="formSubmitButton">
           Submit
         </button>
-      </Form.Body>
-      <Form.Footer>
-        <div className={footerClass}>
-          A password reset email will be sent to your registered email.
+      </Root>
+      <div className="formFooter">
+        <div>
+          Need an account? <Link to="/auth/signup">Sign-up</Link>
         </div>
-      </Form.Footer>
-    </>
+      </div>
+    </div>
   );
 }
 
 function ChangePasswordForm() {
   return (
-    <>
-      <Form.Header className={headerClass} title="Change Password" />
-
-      <Form.Body className={bodyClass}>
-        <Form.InputGroup
+    <div>
+      <h1 className="formHeader">Change Password</h1>
+      <Root schema={ChangePasswordSchema} method="POST">
+        <TextInput
           name="oldPassword"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          labelTitle="Old Password"
-          placeholder="Enter old password"
-          required
+          label="Old Password"
+          type="password"
+          labelAsterisk={true}
+          placeholder="Enter your old password"
+          leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
         />
-        <Form.InputGroup
+
+        <TextInput
           name="newPassword"
-          labelClassName={labelClass}
-          inputClassName={inputClass}
-          labelTitle="New Password"
-          placeholder="Enter new password"
-          required
+          label="New Password"
+          labelAsterisk={true}
+          type="password"
+          placeholder="Enter your new password"
+          leftSectionInput={<KeyboardIcon className="TextInputLeftIcon" />}
         />
-        <button type="submit" className={buttonClass}>
+
+        <button type="submit" className="formSubmitButton">
           Submit
         </button>
-      </Form.Body>
-    </>
-  );
-}
-
-function Profile() {
-  const profile = useLoaderData() as SCHEMA["User"];
-  const displayName = profile.name ? profile.name : profile.email;
-  return (
-    <div className="flex flex-col">
-      <h1 className={headerClass}>Welcome back {displayName}</h1>
-
-      {!profile.isVerified && (
-        <p className="bg-red-500 text-white p-4 rounded-md flex justify-between items-center gap-x-3">
-          <ExclamationTriangleIcon />
-          Please verify your account by linking an email address!
-        </p>
-      )}
+      </Root>
     </div>
   );
 }
+
+function ForgotPasswordForm() {
+  return (
+    <div>
+      <h1 className="formHeader">Forgot Password</h1>
+      <Root schema={ForgotPasswordSchema} method="POST">
+        <TextInput
+          name="email"
+          label="Email"
+          labelAsterisk={true}
+          type="email"
+          placeholder="Enter your email"
+          leftSectionInput={<EnvelopeOpenIcon className="TextInputLeftIcon" />}
+        />
+        <button type="submit" className="formSubmitButton">
+          Submit
+        </button>
+      </Root>
+    </div>
+  );
+}
+
+const useRequireLoggedIn = (profile?: SCHEMA["User"]) => {
+  const navigate = useNavigate();
+  const { setUser } = useAuthContext("Auth");
+  React.useLayoutEffect(() => {
+    if (!profile?.id) {
+      navigate("/auth/");
+    } else {
+      setUser(profile);
+    }
+  }, [JSON.stringify(profile), navigate, setUser]);
+};
+
+const useRequireLoggedOut = () => {
+  // Hooks
+  const { user } = useAuthContext("LoginPage");
+  const navigation = useNavigation();
+  const navigate = useNavigate();
+  const userId = user ? user.id : "";
+  console.log(user);
+
+  // Redirect to profile if logged in
+  React.useLayoutEffect(() => {
+    if (userId) {
+      navigate("/auth/me");
+    }
+  }, [userId, navigate]);
+  return { navigation };
+};
+
+function RegisterPage() {
+  const { navigation } = useRequireLoggedOut();
+  return <>{navigation.state === "idle" && <RegisterForm />}</>;
+}
+
+function LoginPage() {
+  const { navigation } = useRequireLoggedOut();
+
+  return <>{navigation.state === "idle" && <LoginForm />}</>;
+}
+
+function ChangePasswordPage() {
+  return <ChangePasswordForm />;
+}
+
+function ForgotPasswordPage() {
+  return <ForgotPasswordForm />;
+}
+
+function Profile({ profile }: { profile: SCHEMA["User"] }) {
+  useRequireLoggedIn(profile);
+
+  const displayName = profile.name ? profile.name : profile.email;
+  return <p>Logged in as {displayName}</p>;
+}
+
+function ProfilePage() {
+  const result = useLoaderData() as any;
+  return (
+    <React.Suspense>
+      <Await resolve={result.user}>
+        {(user: SCHEMA["User"]) => <Profile profile={user} />}
+      </Await>
+    </React.Suspense>
+  );
+}
+
+import { Outlet } from "react-router-dom";
 
 function Page() {
   return (
     <div className="h-full w-full flex justify-center items-center">
-      <Form.Root className={rootClass}>
+      <div className="p-7 rounded-md flex flex-col bg-white min-w-[500px]  justify-between">
         <Outlet />
-      </Form.Root>
+      </div>
     </div>
   );
 }
 
-export default Page;
 export {
-  SignUpForm,
-  LoginForm,
-  ForgotPasswordForm,
-  ChangePasswordForm,
-  Profile,
+  RegisterPage,
+  LoginPage,
+  ProfilePage,
+  ChangePasswordPage,
+  ForgotPasswordPage,
+  Page,
 };
