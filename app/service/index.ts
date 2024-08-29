@@ -42,7 +42,7 @@ const UserRepository = {
     });
   },
   LogoutUser: async () => {
-    return await client.GET("/auth/logout");
+    return await client.POST("/auth/logout");
   },
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, Form } from "react-router-dom";
 import * as PrimitiveAvatar from "@radix-ui/react-avatar";
 import { useAuthContext, type SCHEMA } from "../service";
 import "./navigation_style.css";
@@ -59,7 +59,9 @@ const ProfileButton = ({ user }: { user: SCHEMA["User"] }) => {
           </DropdownMenu.Item>
           <DropdownMenu.Item className="DropdownMenuItem">
             <ExitIcon />
-            <Link to="/auth/logout">Logout</Link>
+            <Form action="/auth/logout" method="POST">
+              Logout
+            </Form>
           </DropdownMenu.Item>
           <DropdownMenu.Arrow className="DropdownMenuArrow" />
         </DropdownMenu.Content>
