@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 export type * from "./schema";
