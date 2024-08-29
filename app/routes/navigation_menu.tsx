@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink, Form } from "react-router-dom";
+import { Link, NavLink, useSubmit } from "react-router-dom";
 import * as PrimitiveAvatar from "@radix-ui/react-avatar";
 import { useAuthContext, type SCHEMA } from "../service";
 import "./navigation_style.css";
@@ -44,6 +44,7 @@ const Avatar = ({ user }: { user: SCHEMA["User"] }) => {
 };
 
 const ProfileButton = ({ user }: { user: SCHEMA["User"] }) => {
+  const submit = useSubmit();
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -52,18 +53,24 @@ const ProfileButton = ({ user }: { user: SCHEMA["User"] }) => {
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className="DropdownMenuContent" sideOffset={5}>
-          <DropdownMenu.Item className="DropdownMenuItem">
-            <PersonIcon />
-            <Link to="/auth/me">Profile</Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item className="DropdownMenuItem">
-            <ExitIcon />
-            <Form action="/auth/logout" method="POST">
-              Logout
-            </Form>
-          </DropdownMenu.Item>
-          <DropdownMenu.Arrow className="DropdownMenuArrow" />
+        <DropdownMenu.Content sideOffset={5} asChild>
+          <div className="DropdownMenuContent">
+            <DropdownMenu.Item className="DropdownMenuItem">
+              <PersonIcon />
+              <Link to="/auth/me">Profile</Link>
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className="DropdownMenuItem">
+              <ExitIcon />
+              <button
+                onClick={() => {
+                  submit({}, { method: "POST", action: "/auth/logout" });
+                }}
+              >
+                Logout
+              </button>
+            </DropdownMenu.Item>
+            <DropdownMenu.Arrow className="DropdownMenuArrow" />
+          </div>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
