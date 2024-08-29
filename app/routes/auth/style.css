@@ -1,46 +1,85 @@
 .formRoot {
   display: flex;
   flex-direction: column;
-  row-gap: 1rem;
 }
 
-.formLabel {
+.formHeader {
   display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: xx-large;
+  margin: 0.25rem 0;
 }
 
-.formLabelHeader {
+.TextInputLabelContainer {
+  display: flex;
+}
+
+.TextInputLabel {
   justify-content: center;
   align-items: center;
   font-weight: bold;
 }
 
-.formLabelGroup {
+.TextInputContainer {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.formInput,
-.formValidationError {
-  padding: 0.35rem 0.75rem;
-}
-.formInput {
+  align-items: center;
+  border-style: solid;
   border-width: 2px;
   border-radius: 0.375rem;
 }
 
-.formValidationError {
-  color: red;
+.TextInputLeftIcon {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  width: 3rem;
+  stroke: #000000;
+  stroke-width: 0.3px;
+}
+
+.TextInputLabelRightIcon {
+  display: flex;
+  flex-grow: 1;
+  justify-content: right;
+}
+
+.TextInputInput,
+.TextInputDescription {
+  padding: 0.35rem 0.75rem;
+}
+
+.TextInputInput {
+  width: 100%;
+  display: block;
+}
+
+.TextInputDescription[data-valid="valid"] {
+  color: #94a3b8;
+}
+
+.TextInputDescription[data-valid="invalid"] {
+  color: #f87171;
 }
 
 .formSubmitButton {
   border: 1px;
   border-radius: 0.75rem;
-  margin: 0.25rem 0;
+  margin: 1rem 0;
   background-color: #3b82f6;
   color: white;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+  position: static;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: center;
+}
+
+.TextInputLabelRightIcon > a,
+.formFooter > div > a {
+  color: #3b82f6;
+  font-weight: 500;
 }
