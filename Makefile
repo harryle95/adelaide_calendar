@@ -165,13 +165,18 @@ docs-linkcheck-full: 									## Run the full link check on the docs
 # =============================================================================
 # Application
 # =============================================================================
+.PHONE: create-certs
+create-certs:
+	@echo "=>Creating certs folder to store ssl data if does not exist"
+	@mkdir certs -p 
+
 .PHONY: app-dev-no-ssl
-app-dev-no-ssl:											## Start the application - debug mode
+app-dev-no-ssl:	create-certs										## Start the application - debug mode
 	@echo "=>Running application developer mode"
 	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload
 
 
 .PHONY: app-dev
-app-dev: 										## Start the application in debug mode with SSL cert
+app-dev: create-certs												## Start the application in debug mode with SSL cert
 	@echo "=>Running application developer mode"
 	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem --create-self-signed-cert
