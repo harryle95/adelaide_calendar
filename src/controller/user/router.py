@@ -64,8 +64,7 @@ class AuthController(Controller):
         Returns:
             User: created user data if operation is successful
         """
-        user_model = await users_service.to_model(data.to_dict())
-        user = await users_service.create(user_model)
+        user = await users_service.register(data)
         request.set_session({"user_id": user.id})
         return users_service.to_schema(user, schema_type=User)
 
