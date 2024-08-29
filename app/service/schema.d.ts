@@ -86,13 +86,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
          * Logout User
          * @description Logout the user
          */
-        get: operations["LogoutUser"];
-        put?: never;
-        post?: never;
+        post: operations["LogoutUser"];
         delete?: never;
         options?: never;
         head?: never;
@@ -342,12 +342,13 @@ export interface components {
         };
         /** User */
         User: {
-            id?: null | string;
-            email?: null | string;
-            name?: null | string;
+            /** Format: uuid */
+            id: string;
+            email: string;
+            name: string;
             isSuperuser: boolean;
             isVerified: boolean;
-            avatarUrl?: null | string;
+            avatarUrl: string;
         };
         /** UserChangePassword */
         UserChangePassword: {
@@ -546,8 +547,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Request fulfilled, document follows */
-            200: {
+            /** @description Document created, URL follows */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

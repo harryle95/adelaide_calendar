@@ -168,7 +168,7 @@ docs-linkcheck-full: 									## Run the full link check on the docs
 .PHONE: create-certs
 create-certs:
 	@echo "=>Creating certs folder to store ssl data if does not exist"
-	@mkdir certs -p 
+	@mkdir certs -p
 
 .PHONY: app-dev-no-ssl
 app-dev-no-ssl:	create-certs										## Start the application - debug mode

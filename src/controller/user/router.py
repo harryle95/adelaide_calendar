@@ -99,7 +99,7 @@ class AuthController(Controller):
         request.set_session({"user_id": user.id})
         return users_service.to_schema(user, schema_type=User)
 
-    @get(
+    @post(
         operation_id="LogoutUser",
         name="auth:logout",
         summary="Logout User",
@@ -363,9 +363,7 @@ class MeController(Controller):
         Returns:
             User: logged in user information
         """
-        if request.user:
-            return users_service.to_schema(request.user, schema_type=User)
-        return User(id=None, email=None, name=None, is_superuser=False, is_verified=False, avatar_url=None)
+        return users_service.to_schema(request.user, schema_type=User)
 
     @patch(
         operation_id="UpdateMe",
