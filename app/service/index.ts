@@ -59,9 +59,11 @@ const MeRepository = {
 };
 
 type User = SCHEMA["User"];
+
 type AuthContextType = {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
+  isLoggedIn: boolean;
 };
 
 const [AuthProvider, useAuthContext] =

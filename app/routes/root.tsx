@@ -6,13 +6,15 @@ import { AuthProvider } from "../service";
 
 function Root({ profile }: { profile: SCHEMA["User"] }) {
   const [user, setUser] = React.useState<User>(profile);
+
   React.useEffect(() => {
     if (user.id !== profile.id) {
       setUser(profile);
     }
   }, [profile.id]);
+  const isLoggedIn = user.id !== null;
   return (
-    <AuthProvider user={user} setUser={setUser}>
+    <AuthProvider user={user} setUser={setUser} isLoggedIn={isLoggedIn}>
       <main className="h-screen w-screen flex flex-col">
         <NavigationMenu />
         <div className="grow shrink-0">
