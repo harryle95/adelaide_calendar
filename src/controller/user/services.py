@@ -5,7 +5,6 @@ from typing import Any, cast
 from uuid import UUID
 
 import httpx
-from advanced_alchemy.exceptions import ConflictError, IntegrityError
 from advanced_alchemy.service import ModelDictT, SQLAlchemyAsyncRepositoryService
 from authlib.common.security import generate_token
 from authlib.integrations.httpx_client import AsyncOAuth2Client

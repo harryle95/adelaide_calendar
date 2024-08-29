@@ -13,7 +13,7 @@ from src.controller.user.dependencies import provide_users_service
 from src.controller.user.schema import User, UserChangePassword, UserCreate, UserLogin, UserUpdate
 from src.controller.user.services import GoogleOAuth2FlowService, UserService
 from src.controller.user.urls import AdminURL, AuthURL, MeURL
-from src.db.models.user import User as UserModel
+from src.db.models.user import User as UserModel  # noqa: TCH001
 
 if TYPE_CHECKING:
     from uuid import UUID
