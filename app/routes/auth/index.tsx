@@ -32,6 +32,7 @@ const route: RouteObject[] = [
         path: "/auth/me",
         element: <ProfilePage />,
       },
+      { path: "/auth/logout", loader: UserService.LogoutUser },
     ],
   },
 ];

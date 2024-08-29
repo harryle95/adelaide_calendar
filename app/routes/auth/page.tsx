@@ -178,34 +178,31 @@ function ForgotPasswordForm() {
 
 const useRequireLoggedIn = () => {
   // Hooks
-  const { user } = useAuthContext("LoginPage");
+  const { isLoggedIn } = useAuthContext("LoginPage");
   const navigation = useNavigation();
   const navigate = useNavigate();
-  const userId = user ? user.id : "";
 
   // Redirect to logged in
   React.useEffect(() => {
-    if (!userId) {
+    if (!isLoggedIn) {
       navigate("/auth");
     }
-  }, [userId, navigate]);
-  return { navigation, user };
+  }, [isLoggedIn, navigate]);
+  return { navigation };
 };
 
 const useRequireLoggedOut = () => {
   // Hooks
-  const { user } = useAuthContext("LoginPage");
+  const { isLoggedIn } = useAuthContext("LoginPage");
   const navigation = useNavigation();
   const navigate = useNavigate();
-  const userId = user ? user.id : "";
-  console.log(user);
 
   // Redirect to profile if logged in
   React.useLayoutEffect(() => {
-    if (userId) {
+    if (isLoggedIn) {
       navigate("/auth/me");
     }
-  }, [userId, navigate]);
+  }, [isLoggedIn, navigate]);
   return { navigation };
 };
 
@@ -234,7 +231,8 @@ function Profile({ profile }: { profile: SCHEMA["User"] }) {
 }
 
 function ProfilePage() {
-  const { user, navigation } = useRequireLoggedIn();
+  const { navigation } = useRequireLoggedIn();
+  const { user } = useAuthContext("Profile");
   return <>{navigation.state === "idle" && <Profile profile={user!} />}</>;
 }
 
