@@ -60,8 +60,8 @@ const MeRepository = {
 
 type User = SCHEMA["User"];
 type AuthContextType = {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  user: User;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
 };
 
 const [AuthProvider, useAuthContext] =

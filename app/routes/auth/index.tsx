@@ -31,7 +31,6 @@ const route: RouteObject[] = [
       {
         path: "/auth/me",
         element: <ProfilePage />,
-        loader: MeService.GetMe,
       },
     ],
   },
