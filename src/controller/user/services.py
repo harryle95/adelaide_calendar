@@ -2,6 +2,7 @@ import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import quote_plus
 from uuid import UUID
 
 import httpx
@@ -37,10 +38,14 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         Returns:
             User: sqlalchemy User object
         """
-        if isinstance(data, dict) and "password" in data:
-            password: bytes | str | None = data.pop("password", None)
-            if password is not None:
-                data.update({"hashed_password": await hash_plain_text_password(password)})
+        if isinstance(data, dict):
+            encoded_name = quote_plus(data["name"])
+            data["avatar_url"] = f"https://ui-avatars.com/api/?name={encoded_name}"
+            if "password" in data:
+                password: bytes | str | None = data.pop("password", None)
+                if password is not None:
+                    data.update({"hashed_password": await hash_plain_text_password(password)})
+
         return await super().to_model(data, operation)
 
     async def authenticate(self, username: str, password: bytes | str) -> User:
