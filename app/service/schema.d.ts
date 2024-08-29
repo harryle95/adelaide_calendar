@@ -342,10 +342,9 @@ export interface components {
         };
         /** User */
         User: {
-            /** Format: uuid */
-            id: string;
+            id?: null | string;
             email?: null | string;
-            name: string;
+            name?: null | string;
             isSuperuser: boolean;
             isVerified: boolean;
             avatarUrl?: null | string;
@@ -358,6 +357,7 @@ export interface components {
         /** UserCreate */
         UserCreate: {
             name: string;
+            email: string;
             password: string;
         };
         /** UserLogin */

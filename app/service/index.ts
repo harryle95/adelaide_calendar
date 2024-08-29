@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import createClient, { type Middleware } from "openapi-fetch";
-
 import type { paths } from "./schema";
 export type * from "./schema";
 import type { components } from "./schema";
+import { createContext } from "@radix-ui/react-context";
 
 type SCHEMA = components["schemas"];
 
@@ -13,7 +13,8 @@ const throwOnError: Middleware = {
       const body = response.headers.get("content-type")?.includes("json")
         ? await response.clone().json()
         : await response.clone().text();
-      throw new Error(body["status_code"]);
+      console.log(body);
+      throw new Error(body["detail"]);
     }
     return undefined;
   },
@@ -57,6 +58,15 @@ const MeRepository = {
   },
 };
 
-export { UserRepository, MeRepository };
-export type { SCHEMA };
+type User = SCHEMA["User"];
+type AuthContextType = {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+};
+
+const [AuthProvider, useAuthContext] =
+  createContext<AuthContextType>("AuthProvider");
+
+export { UserRepository, MeRepository, useAuthContext, AuthProvider };
+export type { SCHEMA, User, AuthContextType };
 export default client;
