@@ -167,8 +167,12 @@ docs-linkcheck-full: 									## Run the full link check on the docs
 # =============================================================================
 .PHONE: create-certs
 create-certs:
-	@echo "=>Creating certs folder to store ssl data if does not exist"
-	@mkdir certs -p
+	@if [ ! -d certs ]; then 
+		@echo "=>Creating certs folder to store ssl data if does not exist"
+		@mkdir certs -p
+		@echo "=>Creating self-signed certificates"
+		@openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -sha256 -days 365 -nodes -subj "/ST=SouthAustralia/L=Adelaide/O=AdelaideCalendar/OU=AdelaideCalendar/CN=localhost"
+	@fi 
 
 .PHONY: app-dev-no-ssl
 app-dev-no-ssl:	create-certs										## Start the application - debug mode
@@ -176,7 +180,13 @@ app-dev-no-ssl:	create-certs										## Start the application - debug mode
 	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload
 
 
+
 .PHONY: app-dev
 app-dev: create-certs												## Start the application in debug mode with SSL cert
 	@echo "=>Running application developer mode"
 	@$(PDM) run litestar --app src.asgi.app:app run --port 8080 --debug --reload --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem --create-self-signed-cert
+
+.PHONY: deploy
+deploy: create-certs
+	@echo "=>Running application in deployment with uvicorn"
+	@$(PDM) run uvicorn --host 0.0.0.0 src.asgi.app:app --port 8080 --reload --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem
