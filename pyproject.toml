@@ -48,6 +48,9 @@ analysis = [
     "types-passlib>=1.7.7.20240327",
     "types-requests>=2.32.0.20240712",
 ]
+deployment = [
+    "uvicorn>=0.30.6",
+]
 
 [tool.codespell]
 ignore-words-list = "selectin,UE,ue"
