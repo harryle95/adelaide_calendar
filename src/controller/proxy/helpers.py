@@ -36,13 +36,7 @@ class ParamsBuilder:
 
 
 class ResponseParser:
-    mapping = {
-        dto.Campus: dto.CAMPUS_MAPPING,
-        dto.Career: dto.CAREER_MAPPING,
-        dto.CourseSearch: dto.COURSE_SEARCH_MAPPING,
-        dto.Term: dto.TERM_MAPPING,
-        dto.Subject: dto.SUBJECT_MAPPING,
-    }
+    ignore_fields = ["attr:rownumber"]
 
     def __init__(self, data: Any, num_rows: int, total_rows: int) -> None:
         self.data = data
@@ -50,8 +44,7 @@ class ResponseParser:
         self.total_rows = total_rows
 
     @classmethod
-    async def parse(cls, response: Response, response_dto: Any) -> "ResponseParser":
-        response_mapping = cls.mapping[response_dto]
+    async def _extract_query(cls, response: Response) -> Any:
         # Validate
         try:
             response.raise_for_status()
@@ -65,14 +58,15 @@ class ResponseParser:
 
         # Extract query data
         data: dict[str, Any] = body.get("data", {})
-        query: dict[str, Any] = data.get("query", {})
+        return data.get("query", {})
+
+    @classmethod
+    async def parse(cls, response: Response, response_dto: Any) -> "ResponseParser":
+        query = await cls._extract_query(response)
         _rows = query.get("rows", [])
         rows = []
         for row in _rows:
-            args = {}
-            for k, v in response_mapping.items():
-                args[v] = row.get(k, None)
-            rows.append(response_dto(**args))
+            rows.append(response_dto(**{k: v for k, v in row.items() if k not in cls.ignore_fields}))
         num_rows = len(rows)
         total_rows = query.get("total_rows", -1)
         return cls(data=rows, num_rows=num_rows, total_rows=total_rows)
