@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from msgspec import field
+
 from src.utils.schema import CamelizedBaseStruct
 
 __all__ = (
@@ -11,65 +13,39 @@ __all__ = (
 )
 
 
-CAREER_MAPPING = {"FIELDVALUE": "value", "XLATLONGNAME": "name"}
-CAMPUS_MAPPING = {"CAMPUS": "name", "DESCR": "description"}
-SUBJECT_MAPPING = {"SUBJECT": "name", "DESCR": "description"}
-TERM_MAPPING = {
-    "TERM": "id",
-    "DESCR": "description",
-    "ACAD_YEAR": "year",
-    "CURRENT": "current",
-}
-COURSE_SEARCH_MAPPING = {
-    "COURSE_ID": "course_id",
-    "COURSE_OFFER_NBR": "course_offer_number",
-    "YEAR": "year",
-    "TERM": "term",
-    "TERM_DESCR": "term_description",
-    "SUBJECT": "subject",
-    "CATALOG_NBR": "catalog_number",
-    "ACAD_CAREER": "academic_career",
-    "ACAD_CAREER_DESCR": "academic_description",
-    "COURSE_TITLE": "course_title",
-    "UNITS": "units",
-    "CAMPUS": "campus",
-    "CLASS_NBR": "class_number",
-}
+class Career(CamelizedBaseStruct, dict=True):
+    FIELDVALUE: str = field(name="value")
+    XLATLONGNAME: str = field(name="name")
 
 
-class Career(CamelizedBaseStruct):
-    value: str
-    name: str
-
-
-class Campus(CamelizedBaseStruct):
-    name: str
-    description: str
+class Campus(CamelizedBaseStruct, dict=True):
+    CAMPUS: str = field(name="name")
+    DESCR: str = field(name="description")
 
 
 class Subject(CamelizedBaseStruct):
-    name: str
-    description: str
+    SUBJECT: str = field(name="name")
+    DESCR: str = field(name="description")
 
 
 class Term(CamelizedBaseStruct):
-    id: str
-    description: str
-    year: str
-    current: bool
+    TERM: str = field(name="id")
+    DESCR: str = field(name="description")
+    ACAD_YEAR: str = field(name="year")
+    CURRENT: str = field(name="current")
 
 
 class CourseSearch(CamelizedBaseStruct):
-    course_id: str
-    course_offer_number: str
-    year: str
-    term: str
-    term_description: str
-    subject: str
-    catalog_number: str
-    academic_career: str
-    academic_description: str
-    course_title: str
-    units: int
-    campus: str
-    class_number: int
+    COURSE_ID: str = field(name="courseId")
+    COURSE_OFFER_NBR: str = field(name="courseOfferNumber")
+    YEAR: str = field(name="year")
+    TERM: str = field(name="term")
+    TERM_DESCR: str = field(name="termDescription")
+    SUBJECT: str = field(name="subject")
+    CATALOG_NBR: str = field(name="catalogNumber")
+    ACAD_CAREER: str = field(name="academicCareer")
+    ACAD_CAREER_DESCR: str = field(name="academicDescription")
+    COURSE_TITLE: str = field(name="courseTitle")
+    UNITS: str = field(name="units")
+    CAMPUS: str = field(name="campus")
+    CLASS_NBR: str = field(name="classNumber")

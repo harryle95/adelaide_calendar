@@ -23,6 +23,7 @@ class ProxyController(Controller):
         summary="Get Campus Information",
         description="Get Campus Information",
         path=ProxyURL.CAMPUS.value,
+        exclude_from_auth=True,
     )
     async def get_campus_info(self) -> Sequence[Campus]:
         return await ProxyQueryService.campus()
@@ -33,6 +34,7 @@ class ProxyController(Controller):
         summary="Get Academic Level Info",
         description="Get Academic Level Info",
         path=ProxyURL.ACADEMIC_CAREER.value,
+        exclude_from_auth=True,
     )
     async def get_academic_career_info(self) -> Sequence[Career]:
         return await ProxyQueryService.academic_career()
@@ -43,6 +45,7 @@ class ProxyController(Controller):
         summary="Get Term Info",
         description="Get Term Info",
         path=ProxyURL.TERM.value,
+        exclude_from_auth=True,
     )
     async def get_term_info(self) -> Sequence[Term]:
         return await ProxyQueryService.term()
@@ -53,6 +56,7 @@ class ProxyController(Controller):
         summary="Get Subject Info",
         description="Get Subject Info",
         path=ProxyURL.SUBJECT.value,
+        exclude_from_auth=True,
     )
     async def get_subject_info(self) -> Sequence[Subject]:
         return await ProxyQueryService.subjects()
@@ -63,6 +67,7 @@ class ProxyController(Controller):
         summary="Get Course Info",
         description="Get Course Info",
         path=ProxyURL.COURSE.value,
+        exclude_from_auth=True,
     )
     async def get_course_info(
         self,
