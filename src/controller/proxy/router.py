@@ -2,7 +2,17 @@ from collections.abc import Sequence
 
 from litestar import Controller, get
 
-from src.controller.proxy.schema import Campus, Career, CourseSearch, Subject, Term
+from src.controller.proxy.schema import (
+    Campus,
+    Career,
+    CourseClassListDTO,
+    CourseDetail,
+    CourseDetailDTO,
+    CourseSearch,
+    Group,
+    Subject,
+    Term,
+)
 from src.controller.proxy.services import ProxyQueryService
 from src.controller.proxy.urls import ProxyURL
 
@@ -93,4 +103,47 @@ class ProxyController(Controller):
             campus=campus,
             page_number=page_number,
             page_size=page_size,
+        )
+
+    @get(
+        operation_id="GetCourseDetail",
+        name="proxy:courseDetail",
+        summary="Get Course Detail",
+        description="Get Course Detail",
+        path=ProxyURL.COURSE_DETAIL.value,
+        exclude_from_auth=True,
+        return_dto=CourseDetailDTO,
+    )
+    async def get_course_detail(
+        self,
+        course_id: str,
+        course_offer_number: int,
+        term: int,
+        year: int = 2024,
+    ) -> CourseDetail:
+        return await ProxyQueryService.course_detail(
+            course_id=course_id, course_offer_number=course_offer_number, term=term, year=year
+        )
+
+    @get(
+        operation_id="GetCourseClassList",
+        name="proxy:courseClassList",
+        summary="Get Course ClassList",
+        description="Get Course ClassList",
+        path=ProxyURL.COURSE_CLASS_LIST.value,
+        exclude_from_auth=True,
+        return_dto=CourseClassListDTO,
+    )
+    async def get_course_class_list(
+        self,
+        course_id: str,
+        course_offer_number: int,
+        term: int,
+        session: int = 1,
+    ) -> Sequence[Group]:
+        return await ProxyQueryService.course_class_list(
+            course_id=course_id,
+            course_offer_number=course_offer_number,
+            term=term,
+            session=session,
         )
