@@ -237,6 +237,7 @@ function Profile({ profile }: { profile: SCHEMA["User"] }) {
           <p>{profile.name}</p>
           <p>{profile.email}</p>
           <p>{profile.isVerified ? "verified" : "unverified"}</p>
+          <a href="/api/auth/authorize">Authorize</a>
         </div>
       </div>
     </div>
