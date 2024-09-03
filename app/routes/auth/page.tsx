@@ -228,6 +228,7 @@ function ForgotPasswordPage() {
 
 function Profile({ profile }: { profile: SCHEMA["User"] }) {
   const displayName = profile.name ? profile.name : profile.email;
+  const status = profile.isVerified ? "verified" : "unverified";
   return (
     <div>
       <h1 className="profileHeader">Welcome back {displayName}</h1>
@@ -236,8 +237,8 @@ function Profile({ profile }: { profile: SCHEMA["User"] }) {
         <div className="profileInfo">
           <p>{profile.name}</p>
           <p>{profile.email}</p>
-          <p>{profile.isVerified ? "verified" : "unverified"}</p>
-          <a href="/api/auth/authorize">Authorize</a>
+          <p data-state={status}>{status}</p>
+          {!profile.isVerified && <a href="/api/auth/authorize">Authorize</a>}
         </div>
       </div>
     </div>

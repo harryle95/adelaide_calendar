@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 from uuid import UUID
 
@@ -5,14 +7,13 @@ from advanced_alchemy.base import UUIDAuditBase
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-if TYPE_CHECKING:
-    from src.db.models.oauth2_token import OAuth2Token
+from src.db.models.oauth2_token import OAuth2Token
 
 __all__ = ("User",)
 
 
 class User(UUIDAuditBase):
-    __tablename__ = "user_account"
+    __tablename__ = "user_account_table"
     __table_args__ = {"comment": "User accounts for application access"}
     __pii_columns__ = {"name", "email", "avatar_url"}
 
@@ -23,8 +24,9 @@ class User(UUIDAuditBase):
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    oauth2_account: Mapped["OAuth2Token"] = relationship(
+    oauth2_account: Mapped[OAuth2Token] = relationship(
         back_populates="user",
-        lazy="noload",
+        lazy="selectin",
         cascade="all, delete",
+        uselist=False,
     )

@@ -122,9 +122,9 @@ class OAuth2TokenService(SQLAlchemyAsyncRepositoryService[OAuth2Token]):
         self.repository = OAuth2TokenRepository(**kwargs)
         self.model_type = OAuth2Token
 
-    async def add_token(self, data: Mapping[str, str], user: User) -> OAuth2Token:
+    async def add_token(self, data: Mapping[str, str], user_id: UUID) -> OAuth2Token:
         token_model = await self.to_model(cast(dict, data))
-        token_model.user = user
+        token_model.user_id = user_id
         return await self.create(token_model)
 
 
@@ -250,6 +250,7 @@ class OAuth2FlowService:
             self.client_config["auth_uri"],
             code_verifier=self.code_verifier,
             nonce=self.nonce,
+            **kwargs,
         )
         return url, state, self.nonce
 

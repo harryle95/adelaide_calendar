@@ -14,3 +14,11 @@
 .profileInfo {
   padding: 1rem;
 }
+
+.profileInfo > p[data-state="verified"] {
+  color: green;
+}
+
+.profileInfo > p[data-state="unverified"] {
+  color: red;
+}
