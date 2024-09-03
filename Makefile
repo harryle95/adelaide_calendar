@@ -167,12 +167,12 @@ docs-linkcheck-full: 									## Run the full link check on the docs
 # =============================================================================
 .PHONE: create-certs
 create-certs:
-	@if [ ! -d certs ]; then 
+	@if [ ! -d certs ]; then
 		@echo "=>Creating certs folder to store ssl data if does not exist"
 		@mkdir certs -p
 		@echo "=>Creating self-signed certificates"
 		@openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -sha256 -days 365 -nodes -subj "/ST=SouthAustralia/L=Adelaide/O=AdelaideCalendar/OU=AdelaideCalendar/CN=localhost"
-	@fi 
+	@fi
 
 .PHONY: app-dev-no-ssl
 app-dev-no-ssl:	create-certs										## Start the application - debug mode
