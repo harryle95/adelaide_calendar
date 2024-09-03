@@ -8,10 +8,9 @@ from advanced_alchemy.extensions.litestar import (
 from litestar.config.compression import CompressionConfig
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
+from litestar.config.response_cache import ResponseCacheConfig
 
 from src.config.base import Settings
-
-__all__ = ("compression", "csrf", "cors", "alchemy", "settings")
 
 settings = Settings()
 
@@ -31,3 +30,5 @@ alchemy = SQLAlchemyAsyncConfig(
     before_send_handler=async_autocommit_before_send_handler,
     session_config=AsyncSessionConfig(expire_on_commit=False),
 )
+
+response_cache = ResponseCacheConfig(default_expiration=120)

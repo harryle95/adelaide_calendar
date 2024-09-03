@@ -34,6 +34,7 @@ class ProxyController(Controller):
         description="Get Campus Information",
         path=ProxyURL.CAMPUS.value,
         exclude_from_auth=True,
+        cache=True,
     )
     async def get_campus_info(self) -> Sequence[Campus]:
         return await ProxyQueryService.campus()
@@ -45,6 +46,7 @@ class ProxyController(Controller):
         description="Get Academic Level Info",
         path=ProxyURL.ACADEMIC_CAREER.value,
         exclude_from_auth=True,
+        cache=True,
     )
     async def get_academic_career_info(self) -> Sequence[Career]:
         return await ProxyQueryService.academic_career()
@@ -56,6 +58,7 @@ class ProxyController(Controller):
         description="Get Term Info",
         path=ProxyURL.TERM.value,
         exclude_from_auth=True,
+        cache=True,
     )
     async def get_term_info(self) -> Sequence[Term]:
         return await ProxyQueryService.term()
@@ -67,6 +70,7 @@ class ProxyController(Controller):
         description="Get Subject Info",
         path=ProxyURL.SUBJECT.value,
         exclude_from_auth=True,
+        cache=True,
     )
     async def get_subject_info(self) -> Sequence[Subject]:
         return await ProxyQueryService.subjects()
@@ -78,6 +82,7 @@ class ProxyController(Controller):
         description="Get Course Info",
         path=ProxyURL.COURSE.value,
         exclude_from_auth=True,
+        cache=True,
     )
     async def get_course_info(
         self,
@@ -113,6 +118,7 @@ class ProxyController(Controller):
         path=ProxyURL.COURSE_DETAIL.value,
         exclude_from_auth=True,
         return_dto=CourseDetailDTO,
+        cache=True,
     )
     async def get_course_detail(
         self,
@@ -133,6 +139,7 @@ class ProxyController(Controller):
         path=ProxyURL.COURSE_CLASS_LIST.value,
         exclude_from_auth=True,
         return_dto=CourseClassListDTO,
+        cache=True,
     )
     async def get_course_class_list(
         self,
