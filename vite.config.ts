@@ -9,7 +9,7 @@ export default defineConfig({
       cert: "certs/cert.pem",
       key: "certs/key.pem",
     },
-    watch: { cwd: "app" },
+    // watch: { cwd: "./app" },
     proxy: {
       "/api": {
         target: "https://localhost:8080",
