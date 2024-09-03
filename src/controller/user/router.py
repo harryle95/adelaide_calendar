@@ -40,6 +40,8 @@ __all__ = (
 # TODO: use docker for setting up proper database and cache store servers
 # TODO: containerised deployment with Nectr
 # TODO: setup SSR with Remix
+# TODO: setup logging + server tests
+# TODO: purchase a domain name + proper https certificate
 
 
 class AuthController(Controller):
