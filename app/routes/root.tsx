@@ -1,5 +1,5 @@
 import React from "react";
-import { NavigationMenu } from "./navigation_menu";
+import { NavigationMenu } from "./navigationMenu";
 import { Outlet, useLoaderData, Await } from "react-router-dom";
 import type { SCHEMA, User } from "../service";
 import { AuthProvider } from "../service";

@@ -9,6 +9,8 @@ import { useAuthContext } from "../../service";
 import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { SCHEMA } from "../../service";
 import React from "react";
+import { Avatar } from "../components";
+import "./profileStyle.css";
 
 const RegisterSchema = z.object({
   name: z
@@ -226,7 +228,19 @@ function ForgotPasswordPage() {
 
 function Profile({ profile }: { profile: SCHEMA["User"] }) {
   const displayName = profile.name ? profile.name : profile.email;
-  return <p>Logged in as {displayName}</p>;
+  return (
+    <div>
+      <h1 className="profileHeader">Welcome back {displayName}</h1>
+      <div className="profileContent">
+        <Avatar user={profile} />
+        <div className="profileInfo">
+          <p>{profile.name}</p>
+          <p>{profile.email}</p>
+          <p>{profile.isVerified ? "verified" : "unverified"}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ProfilePage() {
