@@ -30,6 +30,17 @@ __all__ = (
     "MeController",
 )
 
+# TODO: at login, if token expires, refresh token
+# TODO: register and login with OIDC, google SDK
+# TODO: add revoke method
+# TODO: add calendar manipulation APIs
+# TODO: use some mail clients to send email for user verification and for resetting password
+# TODO: for backend, persistent session with Redis instead of in memory
+# TODO: for frontend, persistent login with local/session storage
+# TODO: use docker for setting up proper database and cache store servers
+# TODO: containerised deployment with Nectr
+# TODO: setup SSR with Remix
+
 
 class AuthController(Controller):
     """Authentication Controller"""
