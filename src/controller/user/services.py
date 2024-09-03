@@ -12,8 +12,10 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.jose import jwt
 from litestar.exceptions import PermissionDeniedException
 
-from src.controller.user.repositories import UserRepository
+from src.controller.user.repositories import OAuth2TokenRepository, UserRepository
 from src.controller.user.schema import OAuth2Config, UserCreate
+from src.controller.user.schema import OAuth2Token as OAuth2Schema
+from src.db.models.oauth2_token import OAuth2Token
 from src.db.models.user import User
 from src.utils.crypt import hash_plain_text_password, validate_password
 
@@ -113,6 +115,17 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
     async def register(self, data: UserCreate) -> User:
         user_model = await self.to_model(data.to_dict())
         return await self.create(user_model, error_messages={"foreign_key": "Username or email already exists"})
+
+
+class OAuth2TokenService(SQLAlchemyAsyncRepositoryService[OAuth2Token]):
+    def __init__(self, **kwargs: Any) -> None:
+        self.repository = OAuth2TokenRepository(**kwargs)
+        self.model_type = OAuth2Token
+
+    async def add_token(self, data: Mapping[str, str], user: User) -> OAuth2Token:
+        token_model = await self.to_model(cast(dict, data))
+        token_model.user = user
+        return await self.create(token_model)
 
 
 class OAuth2FlowService:

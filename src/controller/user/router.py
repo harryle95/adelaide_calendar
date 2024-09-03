@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Annotated, Any, cast
 
 from litestar import Controller, Request, delete, get, patch, post
@@ -9,9 +10,9 @@ from litestar.di import Provide
 from litestar.exceptions import PermissionDeniedException
 from litestar.response import Redirect
 
-from src.controller.user.dependencies import provide_users_service
+from src.controller.user.dependencies import provide_oauth2_token_service, provide_users_service
 from src.controller.user.schema import User, UserChangePassword, UserCreate, UserLogin, UserUpdate
-from src.controller.user.services import GoogleOAuth2FlowService, UserService
+from src.controller.user.services import GoogleOAuth2FlowService, OAuth2TokenService, UserService
 from src.controller.user.urls import AdminURL, AuthURL, MeURL
 from src.db.models.user import User as UserModel  # noqa: TCH001
 
@@ -35,7 +36,10 @@ class AuthController(Controller):
     """Authentication Controller"""
 
     tags = ["User Authentication"]
-    dependencies = {"users_service": Provide(provide_users_service)}
+    dependencies = {
+        "users_service": Provide(provide_users_service),
+        "token_service": Provide(provide_oauth2_token_service),
+    }
     signature_namespace = {"UserService": UserService}
     dto = None
     return_dto = None
@@ -97,6 +101,9 @@ class AuthController(Controller):
         """
         user = await users_service.authenticate(data.name_or_email, data.password)
         request.set_session({"user_id": user.id})
+        user_credentials = user.oauth2_account
+        if user_credentials and not user.is_verified:
+            user.is_verified = True
         return users_service.to_schema(user, schema_type=User)
 
     @post(
@@ -148,9 +155,11 @@ class AuthController(Controller):
         summary="Handle Token Fetching",
         description="Token fetching and validation",
         path=AuthURL.OAUTH_REDIRECT.value,
-        exclude_from_auth=True,
+        exclude_from_auth=False,
     )
-    async def oauth2callback(self, request: Request[Any, Any, Any], state: State) -> None:
+    async def oauth2callback(
+        self, request: Request[UserModel, Any, Any], state: State, token_service: OAuth2TokenService
+    ) -> None:
         # Validate state parameter
         param_state = request.query_params["state"]
         if param_state != state["state"]:
@@ -177,6 +186,11 @@ class AuthController(Controller):
             id_decoded = await flow.verify_token(id_token_raw)
             session_data["id_token"] = id_decoded
         request.set_session(session_data)
+
+        # Add to db
+        user = request.user
+        await token_service.add_token(data=credentials, user=user)
+        user.is_verified = True
 
 
 class AdminController(Controller):
