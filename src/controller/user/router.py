@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Annotated, Any, cast
 
 from litestar import Controller, Request, delete, get, patch, post
@@ -114,9 +113,6 @@ class AuthController(Controller):
         """
         user = await users_service.authenticate(data.name_or_email, data.password)
         request.set_session({"user_id": user.id})
-        user_credentials = user.oauth2_account
-        if user_credentials and not user.is_verified:
-            user.is_verified = True
         return users_service.to_schema(user, schema_type=User)
 
     @post(
@@ -168,7 +164,7 @@ class AuthController(Controller):
         summary="Handle Token Fetching",
         description="Token fetching and validation",
         path=AuthURL.OAUTH_REDIRECT.value,
-        exclude_from_auth=False,
+        exclude_from_auth=True,
     )
     async def oauth2callback(
         self,
