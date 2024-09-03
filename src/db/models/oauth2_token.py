@@ -24,13 +24,15 @@ class OAuth2Token(UUIDAuditBase):
     expires_at: Mapped[str]
 
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("user_account.id", ondelete="cascade"),
+        ForeignKey(
+            "user_account.id",
+            ondelete="cascade",
+        ),
         nullable=False,
     )
 
-    user: Mapped[User] = relationship(
-        back_populates="oauth_accounts",
-        viewonly=True,
+    user: Mapped["User"] = relationship(
+        back_populates="oauth2_account",
         innerjoin=True,
         lazy="joined",
     )

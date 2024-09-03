@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from advanced_alchemy.base import UUIDAuditBase
-from sqlalchemy import String
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
@@ -22,9 +23,8 @@ class User(UUIDAuditBase):
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    oauth_accounts: Mapped[list[OAuth2Token]] = relationship(
+    oauth2_account: Mapped["OAuth2Token"] = relationship(
         back_populates="user",
         lazy="noload",
         cascade="all, delete",
-        uselist=True,
     )
