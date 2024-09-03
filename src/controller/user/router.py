@@ -130,7 +130,8 @@ class AuthController(Controller):
     )
     async def authorise(self, state: State) -> Redirect:
         flow = GoogleOAuth2FlowService.from_client_secrets_file(
-            ".creds/google_secrets.json", scope=["openid", "email", "profile"]
+            ".creds/google_secrets.json",
+            scope=["openid", "email", "profile"],
         )
         redirect_uri = flow.client_config["redirect_uris"]
         flow.redirect_uri = redirect_uri if isinstance(redirect_uri, str) else redirect_uri[0]
@@ -200,7 +201,7 @@ class AdminController(Controller):
         filters: Annotated[list[FilterTypes], Dependency(skip_validation=True)],
     ) -> OffsetPagination[User]:
         """Retrieve all users in the current database. Currently requires login to access this. Will require
-        admin privillege in the future
+        admin privilege in the future
 
         Args:
             users_service (UserService): user service object

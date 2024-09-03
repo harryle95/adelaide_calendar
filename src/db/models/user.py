@@ -1,6 +1,11 @@
+from typing import TYPE_CHECKING
+
 from advanced_alchemy.base import UUIDAuditBase
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+if TYPE_CHECKING:
+    from src.db.models.oauth2_token import OAuth2Token
 
 __all__ = ("User",)
 
@@ -16,3 +21,10 @@ class User(UUIDAuditBase):
     avatar_url: Mapped[str | None] = mapped_column(String(length=500), nullable=True, default=None)
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
+
+    oauth_accounts: Mapped[list[OAuth2Token]] = relationship(
+        back_populates="user",
+        lazy="noload",
+        cascade="all, delete",
+        uselist=True,
+    )
