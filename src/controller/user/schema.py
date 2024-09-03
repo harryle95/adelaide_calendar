@@ -69,6 +69,7 @@ class OAuth2Config(TypedDict):
 class OAuth2Token(TypedDict):
     access_token: str
     expires_in: int
+    refresh_token: str
     scope: str
     token_type: str
     id_token: str

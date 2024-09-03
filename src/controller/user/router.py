@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Annotated, Any, cast
 
 from litestar import Controller, Request, delete, get, patch, post
@@ -101,9 +100,6 @@ class AuthController(Controller):
         """
         user = await users_service.authenticate(data.name_or_email, data.password)
         request.set_session({"user_id": user.id})
-        user_credentials = user.oauth2_account
-        if user_credentials and not user.is_verified:
-            user.is_verified = True
         return users_service.to_schema(user, schema_type=User)
 
     @post(
@@ -133,20 +129,20 @@ class AuthController(Controller):
         summary="Authorise User",
         description="Authorise User",
         path=AuthURL.AUTHORIZE.value,
-        exclude_from_auth=True,
     )
-    async def authorise(self, state: State) -> Redirect:
+    async def authorise(self, state: State, request: Request[UserModel, Any, Any]) -> Redirect:
         flow = GoogleOAuth2FlowService.from_client_secrets_file(
             ".creds/google_secrets.json",
             scope=["openid", "email", "profile"],
         )
         redirect_uri = flow.client_config["redirect_uris"]
         flow.redirect_uri = redirect_uri if isinstance(redirect_uri, str) else redirect_uri[0]
-        url, flow_state, nonce = flow.authorization_url()
+        url, flow_state, nonce = flow.authorization_url(access_type="offline")
 
         # Save nonce and state value for further validation
         state["state"] = flow_state
         state["nonce"] = nonce
+        state["user_id"] = request.user.id
         return Redirect(url)
 
     @get(
@@ -155,11 +151,15 @@ class AuthController(Controller):
         summary="Handle Token Fetching",
         description="Token fetching and validation",
         path=AuthURL.OAUTH_REDIRECT.value,
-        exclude_from_auth=False,
+        exclude_from_auth=True,
     )
     async def oauth2callback(
-        self, request: Request[UserModel, Any, Any], state: State, token_service: OAuth2TokenService
-    ) -> None:
+        self,
+        request: Request[Any, Any, Any],
+        state: State,
+        token_service: OAuth2TokenService,
+        users_service: UserService,
+    ) -> Redirect:
         # Validate state parameter
         param_state = request.query_params["state"]
         if param_state != state["state"]:
@@ -188,9 +188,14 @@ class AuthController(Controller):
         request.set_session(session_data)
 
         # Add to db
-        user = request.user
-        await token_service.add_token(data=credentials, user=user)
+        user_id = state["user_id"]
+        user = await users_service.get_one(id=user_id)
+        await token_service.add_token(data=credentials, user_id=user_id)
         user.is_verified = True
+        await token_service.repository.session.commit()
+        await users_service.repository.session.commit()
+        request.set_session({"user_id": user_id})
+        return Redirect("https://localhost:5173")
 
 
 class AdminController(Controller):
