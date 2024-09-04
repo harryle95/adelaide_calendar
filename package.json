@@ -1,5 +1,6 @@
 {
   "name": "vite_app",
+  "homepage": "https://harryle95.github.io/adelaide_calendar/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
