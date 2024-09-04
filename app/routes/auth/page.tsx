@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
 import {
   EnvelopeOpenIcon,
@@ -10,6 +9,8 @@ import { useAuthContext } from "../../service";
 import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { SCHEMA } from "../../service";
 import React from "react";
+import { Avatar } from "../components";
+import "./profileStyle.css";
 
 const RegisterSchema = z.object({
   name: z
@@ -227,7 +228,21 @@ function ForgotPasswordPage() {
 
 function Profile({ profile }: { profile: SCHEMA["User"] }) {
   const displayName = profile.name ? profile.name : profile.email;
-  return <p>Logged in as {displayName}</p>;
+  const status = profile.isVerified ? "verified" : "unverified";
+  return (
+    <div>
+      <h1 className="profileHeader">Welcome back {displayName}</h1>
+      <div className="profileContent">
+        <Avatar user={profile} />
+        <div className="profileInfo">
+          <p>{profile.name}</p>
+          <p>{profile.email}</p>
+          <p data-state={status}>{status}</p>
+          {!profile.isVerified && <a href="/api/auth/authorize">Authorize</a>}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ProfilePage() {

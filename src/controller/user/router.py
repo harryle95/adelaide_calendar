@@ -9,9 +9,9 @@ from litestar.di import Provide
 from litestar.exceptions import PermissionDeniedException
 from litestar.response import Redirect
 
-from src.controller.user.dependencies import provide_users_service
+from src.controller.user.dependencies import provide_oauth2_token_service, provide_users_service
 from src.controller.user.schema import User, UserChangePassword, UserCreate, UserLogin, UserUpdate
-from src.controller.user.services import GoogleOAuth2FlowService, UserService
+from src.controller.user.services import GoogleOAuth2FlowService, OAuth2TokenService, UserService
 from src.controller.user.urls import AdminURL, AuthURL, MeURL
 from src.db.models.user import User as UserModel  # noqa: TCH001
 
@@ -30,12 +30,28 @@ __all__ = (
     "MeController",
 )
 
+# TODO: at login, if token expires, refresh token
+# TODO: register and login with OIDC, google SDK
+# TODO: add revoke method
+# TODO: add calendar manipulation APIs
+# TODO: use some mail clients to send email for user verification and for resetting password
+# TODO: for backend, persistent session with Redis instead of in memory
+# TODO: for frontend, persistent login with local/session storage
+# TODO: use docker for setting up proper database and cache store servers
+# TODO: containerised deployment with Nectr
+# TODO: setup SSR with Remix
+# TODO: setup logging + server tests
+# TODO: purchase a domain name + proper https certificate
+
 
 class AuthController(Controller):
     """Authentication Controller"""
 
     tags = ["User Authentication"]
-    dependencies = {"users_service": Provide(provide_users_service)}
+    dependencies = {
+        "users_service": Provide(provide_users_service),
+        "token_service": Provide(provide_oauth2_token_service),
+    }
     signature_namespace = {"UserService": UserService}
     dto = None
     return_dto = None
@@ -126,19 +142,20 @@ class AuthController(Controller):
         summary="Authorise User",
         description="Authorise User",
         path=AuthURL.AUTHORIZE.value,
-        exclude_from_auth=True,
     )
-    async def authorise(self, state: State) -> Redirect:
+    async def authorise(self, state: State, request: Request[UserModel, Any, Any]) -> Redirect:
         flow = GoogleOAuth2FlowService.from_client_secrets_file(
-            ".creds/google_secrets.json", scope=["openid", "email", "profile"]
+            ".creds/google_secrets.json",
+            scope=["openid", "email", "profile"],
         )
         redirect_uri = flow.client_config["redirect_uris"]
         flow.redirect_uri = redirect_uri if isinstance(redirect_uri, str) else redirect_uri[0]
-        url, flow_state, nonce = flow.authorization_url()
+        url, flow_state, nonce = flow.authorization_url(access_type="offline")
 
         # Save nonce and state value for further validation
         state["state"] = flow_state
         state["nonce"] = nonce
+        state["user_id"] = request.user.id
         return Redirect(url)
 
     @get(
@@ -149,7 +166,13 @@ class AuthController(Controller):
         path=AuthURL.OAUTH_REDIRECT.value,
         exclude_from_auth=True,
     )
-    async def oauth2callback(self, request: Request[Any, Any, Any], state: State) -> None:
+    async def oauth2callback(
+        self,
+        request: Request[Any, Any, Any],
+        state: State,
+        token_service: OAuth2TokenService,
+        users_service: UserService,
+    ) -> Redirect:
         # Validate state parameter
         param_state = request.query_params["state"]
         if param_state != state["state"]:
@@ -177,6 +200,16 @@ class AuthController(Controller):
             session_data["id_token"] = id_decoded
         request.set_session(session_data)
 
+        # Add to db
+        user_id = state["user_id"]
+        user = await users_service.get_one(id=user_id)
+        await token_service.add_token(data=credentials, user_id=user_id)
+        user.is_verified = True
+        await token_service.repository.session.commit()
+        await users_service.repository.session.commit()
+        request.set_session({"user_id": user_id})
+        return Redirect("https://localhost:5173")
+
 
 class AdminController(Controller):
     """Admin Account Controller."""
@@ -200,7 +233,7 @@ class AdminController(Controller):
         filters: Annotated[list[FilterTypes], Dependency(skip_validation=True)],
     ) -> OffsetPagination[User]:
         """Retrieve all users in the current database. Currently requires login to access this. Will require
-        admin privillege in the future
+        admin privilege in the future
 
         Args:
             users_service (UserService): user service object

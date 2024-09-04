@@ -1,0 +1,24 @@
+.profileHeader,
+.profileContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileHeader {
+  font-weight: bold;
+  font-size: xx-large;
+  margin: 0.5rem 0;
+}
+
+.profileInfo {
+  padding: 1rem;
+}
+
+.profileInfo > p[data-state="verified"] {
+  color: green;
+}
+
+.profileInfo > p[data-state="unverified"] {
+  color: red;
+}

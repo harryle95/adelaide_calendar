@@ -1,5 +1,6 @@
 {
   "name": "vite_app",
+  "homepage": "https://harryle95.github.io/adelaide_calendar/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "vite --host 0.0.0.0 --port 443 --cors",
+    "deploy": "vite --host 0.0.0.0 --port 8000 --cors&",
     "openapi": "npx openapi-typescript http://127.0.0.1:8080/schema/openapi.json -o app/service/schema.d.ts"
   },
   "dependencies": {

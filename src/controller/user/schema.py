@@ -64,3 +64,30 @@ class OAuth2Config(TypedDict):
     cert_url: NotRequired[str]
     client_secret: Required[str]
     redirect_uris: Required[str]
+
+
+class OAuth2Token(TypedDict):
+    access_token: str
+    expires_in: int
+    refresh_token: str
+    scope: str
+    token_type: str
+    id_token: str
+    expires_at: str
+
+
+class OIDCClaim(TypedDict):
+    iss: str
+    azp: str
+    aud: str
+    sub: str
+    email: str
+    email_verified: str
+    at_hash: str
+    nonce: str
+    name: str
+    picture: str
+    given_name: str
+    family_name: str
+    iat: int
+    exp: int

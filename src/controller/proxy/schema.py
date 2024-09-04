@@ -1,75 +1,126 @@
 from __future__ import annotations
 
-from src.utils.schema import CamelizedBaseStruct
+from litestar.dto.config import DTOConfig
+from litestar.dto.msgspec_dto import MsgspecDTO
+from msgspec import Struct, field
 
 __all__ = (
     "Campus",
     "Career",
+    "ClassInfo",
+    "CourseClassListDTO",
+    "CourseDetail",
+    "CourseDetailDTO",
     "CourseSearch",
+    "CriticalDates",
+    "Group",
+    "Meetings",
     "Subject",
     "Term",
+    "lower_camel",
 )
 
 
-CAREER_MAPPING = {"FIELDVALUE": "value", "XLATLONGNAME": "name"}
-CAMPUS_MAPPING = {"CAMPUS": "name", "DESCR": "description"}
-SUBJECT_MAPPING = {"SUBJECT": "name", "DESCR": "description"}
-TERM_MAPPING = {
-    "TERM": "id",
-    "DESCR": "description",
-    "ACAD_YEAR": "year",
-    "CURRENT": "current",
-}
-COURSE_SEARCH_MAPPING = {
-    "COURSE_ID": "course_id",
-    "COURSE_OFFER_NBR": "course_offer_number",
-    "YEAR": "year",
-    "TERM": "term",
-    "TERM_DESCR": "term_description",
-    "SUBJECT": "subject",
-    "CATALOG_NBR": "catalog_number",
-    "ACAD_CAREER": "academic_career",
-    "ACAD_CAREER_DESCR": "academic_description",
-    "COURSE_TITLE": "course_title",
-    "UNITS": "units",
-    "CAMPUS": "campus",
-    "CLASS_NBR": "class_number",
-}
+def lower_camel(word: str) -> str:
+    word = word.lower()
+    return word.split("_")[0] + "".join(x.capitalize() or "_" for x in word.split("_")[1:])
 
 
-class Career(CamelizedBaseStruct):
-    value: str
-    name: str
+class Career(Struct, rename=lower_camel):
+    FIELDVALUE: str = field(name="value")
+    XLATLONGNAME: str = field(name="name")
 
 
-class Campus(CamelizedBaseStruct):
-    name: str
-    description: str
+class Campus(Struct, rename=lower_camel):
+    CAMPUS: str
+    DESCR: str
 
 
-class Subject(CamelizedBaseStruct):
-    name: str
-    description: str
+class Subject(Struct, rename=lower_camel):
+    SUBJECT: str
+    DESCR: str
 
 
-class Term(CamelizedBaseStruct):
-    id: str
-    description: str
-    year: str
-    current: bool
+class Term(Struct, rename=lower_camel):
+    TERM: str
+    DESCR: str
+    ACAD_YEAR: str
+    CURRENT: str
 
 
-class CourseSearch(CamelizedBaseStruct):
-    course_id: str
-    course_offer_number: str
-    year: str
-    term: str
-    term_description: str
-    subject: str
-    catalog_number: str
-    academic_career: str
-    academic_description: str
-    course_title: str
-    units: int
-    campus: str
-    class_number: int
+class CourseSearch(Struct, rename=lower_camel):
+    ACAD_CAREER: str
+    ACAD_CAREER_DESCR: str
+    CAMPUS: str
+    CATALOG_NBR: str
+    CLASS_NBR: str
+    COURSE_ID: str
+    COURSE_OFFER_NBR: str
+    COURSE_TITLE: str
+    SUBJECT: str
+    YEAR: str
+    TERM: str
+    TERM_DESCR: str
+    UNITS: str
+
+
+class CriticalDates(Struct, rename=lower_camel):
+    CENSUS_DT: str
+    LAST_DAY: str
+    LAST_DAY_TO_WF: str
+    LAST_DAY_TO_WFN: str
+
+
+class CourseDetail(CourseSearch):
+    ASSESSMENT: str
+    ASSUMED_KNOWLEDGE: str
+    AVAILABLE_FOR_NON_AWARD_STUDY: str
+    AVAILABLE_FOR_STUDY_ABROAD: str
+    BIENNIAL_COURSE: str
+    CAMPUS_CD: str
+    CONTACT: str
+    COUNTRY: str
+    CO_REQUISITE: str
+    CRITICAL_DATES: CriticalDates
+    EFTLS: float
+    INCOMPATIBLE: str
+    PRE_REQUISITE: str
+    QUOTA: str
+    QUOTA_TXT: str
+    RESTRICTION: str
+    RESTRICTION_TXT: str
+    SESSION_CD: str
+    SYLLABUS: str
+    URL: str
+
+
+class CourseDetailDTO(MsgspecDTO[CourseDetail]):
+    config = DTOConfig(rename_strategy=lower_camel)
+
+
+class Meetings(Struct):
+    dates: str
+    days: str
+    start_time: str
+    end_time: str
+    location: str
+
+
+class ClassInfo(Struct):
+    class_nbr: str
+    section: str
+    size: int
+    enrolled: int
+    available: int
+    institution: str
+    component: str
+    meetings: list[Meetings]
+
+
+class Group(Struct):
+    type: str
+    classes: list[ClassInfo]
+
+
+class CourseClassListDTO(MsgspecDTO[Group]):
+    config = DTOConfig(rename_strategy=lower_camel)

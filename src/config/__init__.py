@@ -1,4 +1,4 @@
-from src.config.app import alchemy, compression, cors, csrf, settings
+from src.config.app import alchemy, compression, cors, csrf, response_cache, settings
 
 __all__ = (
     "alchemy",
@@ -6,4 +6,5 @@ __all__ = (
     "cors",
     "csrf",
     "settings",
+    "response_cache",
 )

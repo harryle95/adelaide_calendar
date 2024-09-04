@@ -4,10 +4,10 @@ from typing import Any
 from litestar import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.controller.user.services import UserService
+from src.controller.user.services import OAuth2TokenService, UserService
 from src.db.models.user import User
 
-__all__ = ("provide_users_service",)
+__all__ = ("provide_users_service", "provide_oauth2_token_service")
 
 
 async def provide_user(request: Request[User, Any, Any]) -> AsyncGenerator[User, None]:
@@ -19,4 +19,9 @@ async def provide_users_service(db_session: AsyncSession) -> AsyncGenerator[User
     async with UserService.new(
         session=db_session,
     ) as service:
+        yield service
+
+
+async def provide_oauth2_token_service(db_session: AsyncSession) -> AsyncGenerator[OAuth2TokenService, None]:
+    async with OAuth2TokenService.new(session=db_session) as service:
         yield service

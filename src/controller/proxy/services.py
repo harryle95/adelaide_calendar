@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import aiohttp
 
@@ -15,6 +15,8 @@ __all__ = ("ProxyQueryService",)
 
 
 COURSE_SEARCH_TARGET = "/system/COURSE_SEARCH/queryx"
+COURSE_DETAIL_TARGET = "/system/COURSE_DTL/queryx"
+COURSE_CLASS_LIST_TARGET = "/system/COURSE_CLASS_LIST/queryx"
 CAMPUS_TARGET = "/system/CAMPUS/queryx"
 CSP_ACAD_CAREER_TARGET = "/system/CSP_ACAD_CAREER/queryx"
 TERMS_TARGET = "/system/TERMS/queryx"
@@ -26,27 +28,29 @@ YEAR = 2024
 
 class ProxyQueryService:
     @staticmethod
-    async def query(param_builder: ParamsBuilder, response_dto: Any) -> Any:
+    async def query(
+        param_builder: ParamsBuilder, response_dto: Any, extractor: Literal["rows", "groups"] = "rows"
+    ) -> Any:
         async with aiohttp.ClientSession() as client:
             raw_response = await client.get(
                 url=API_END_POINT,
                 params=param_builder.params,
             )
-            result = await ResponseParser.parse(raw_response, response_dto)
+            result = await ResponseParser.parse(raw_response, response_dto, extractor=extractor)
             return result.data
 
     @staticmethod
     async def campus() -> Sequence[dto.Campus]:
         return cast(
             Sequence[dto.Campus],
-            ProxyQueryService.query(ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.Campus),
+            await ProxyQueryService.query(ParamsBuilder(target=CAMPUS_TARGET, MaxRows=9999), dto.Campus),
         )
 
     @staticmethod
     async def academic_career() -> Sequence[dto.Career]:
         return cast(
             Sequence[dto.Career],
-            ProxyQueryService.query(
+            await ProxyQueryService.query(
                 ParamsBuilder(target=CSP_ACAD_CAREER_TARGET, MaxRows=9999),
                 dto.Career,
             ),
@@ -56,7 +60,7 @@ class ProxyQueryService:
     async def term() -> Sequence[dto.Term]:
         return cast(
             Sequence[dto.Term],
-            ProxyQueryService.query(
+            await ProxyQueryService.query(
                 ParamsBuilder(
                     target=TERMS_TARGET,
                     MaxRows=9999,
@@ -72,7 +76,7 @@ class ProxyQueryService:
     async def subjects() -> Sequence[dto.Subject]:
         return cast(
             Sequence[dto.Subject],
-            ProxyQueryService.query(
+            await ProxyQueryService.query(
                 ParamsBuilder(
                     target=SUBJECT_TARGET,
                     MaxRows=9999,
@@ -115,11 +119,42 @@ class ProxyQueryService:
         )
         return cast(
             Sequence[dto.CourseSearch],
-            ProxyQueryService.query(
+            await ProxyQueryService.query(
                 params_builder,
                 dto.CourseSearch,
             ),
         )
+
+    @staticmethod
+    async def course_detail(course_id: str, course_offer_number: int, term: int, year: int = YEAR) -> dto.CourseDetail:
+        params_builder = ParamsBuilder(
+            target=COURSE_DETAIL_TARGET,
+            virtual=VIRTUAL,
+            year=year,
+            courseid=course_id,
+            course_offer_nbr=course_offer_number,
+            term=term,
+        )
+        data = await ProxyQueryService.query(
+            params_builder,
+            dto.CourseDetail,
+        )
+        return cast(dto.CourseDetail, data[0])
+
+    @staticmethod
+    async def course_class_list(
+        course_id: str, course_offer_number: int, term: int, session: int = 1
+    ) -> Sequence[dto.Group]:
+        params_builder = ParamsBuilder(
+            target=COURSE_CLASS_LIST_TARGET,
+            virtual=VIRTUAL,
+            crseid=course_id,
+            offer=course_offer_number,
+            term=term,
+            session=session,
+        )
+        data = await ProxyQueryService.query(params_builder, dto.Group, extractor="groups")
+        return cast(Sequence[dto.Group], data)
 
     @staticmethod
     async def course_paginator(

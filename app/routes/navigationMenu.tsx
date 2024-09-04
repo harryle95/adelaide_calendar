@@ -1,9 +1,8 @@
 import React from "react";
 import { Link, NavLink, useSubmit } from "react-router-dom";
-import * as PrimitiveAvatar from "@radix-ui/react-avatar";
+import { Avatar } from "./components/avatar";
 import { useAuthContext, type SCHEMA } from "../service";
-import "./navigation_style.css";
-import "./drop_down_style.css";
+import "./dropDownStyle.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ExitIcon, PersonIcon } from "@radix-ui/react-icons";
 
@@ -12,35 +11,6 @@ const menuMap: Record<string, string> = {
   Schedule: "/schedule",
   Courses: "/course",
   Degree: "/degree",
-};
-
-const getInitials = (name?: string) => {
-  if (name) {
-    const nameSplit = name.split(" ");
-    if (nameSplit.length === 1) {
-      const nameStr = nameSplit[0];
-      return nameStr.length === 1 ? nameStr[0] : nameStr[0] + nameStr[1];
-    }
-    const firstInitial = nameSplit[0][0].toUpperCase();
-    const lastInitial = nameSplit[nameSplit.length - 1][0].toUpperCase();
-    return firstInitial + lastInitial;
-  }
-  return "JD";
-};
-
-const Avatar = ({ user }: { user: SCHEMA["User"] }) => {
-  return (
-    <PrimitiveAvatar.Root className="AvatarRoot">
-      <PrimitiveAvatar.Image
-        className="AvatarImage"
-        src={user.avatarUrl!}
-        alt={user.name!}
-      />
-      <PrimitiveAvatar.Fallback className="AvatarFallback" delayMs={600}>
-        {getInitials(user.name!)}
-      </PrimitiveAvatar.Fallback>
-    </PrimitiveAvatar.Root>
-  );
 };
 
 const ProfileButton = ({ user }: { user: SCHEMA["User"] }) => {

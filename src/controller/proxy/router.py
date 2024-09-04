@@ -2,7 +2,17 @@ from collections.abc import Sequence
 
 from litestar import Controller, get
 
-from src.controller.proxy.schema import Campus, Career, CourseSearch, Subject, Term
+from src.controller.proxy.schema import (
+    Campus,
+    Career,
+    CourseClassListDTO,
+    CourseDetail,
+    CourseDetailDTO,
+    CourseSearch,
+    Group,
+    Subject,
+    Term,
+)
 from src.controller.proxy.services import ProxyQueryService
 from src.controller.proxy.urls import ProxyURL
 
@@ -23,6 +33,8 @@ class ProxyController(Controller):
         summary="Get Campus Information",
         description="Get Campus Information",
         path=ProxyURL.CAMPUS.value,
+        exclude_from_auth=True,
+        cache=True,
     )
     async def get_campus_info(self) -> Sequence[Campus]:
         return await ProxyQueryService.campus()
@@ -33,6 +45,8 @@ class ProxyController(Controller):
         summary="Get Academic Level Info",
         description="Get Academic Level Info",
         path=ProxyURL.ACADEMIC_CAREER.value,
+        exclude_from_auth=True,
+        cache=True,
     )
     async def get_academic_career_info(self) -> Sequence[Career]:
         return await ProxyQueryService.academic_career()
@@ -43,6 +57,8 @@ class ProxyController(Controller):
         summary="Get Term Info",
         description="Get Term Info",
         path=ProxyURL.TERM.value,
+        exclude_from_auth=True,
+        cache=True,
     )
     async def get_term_info(self) -> Sequence[Term]:
         return await ProxyQueryService.term()
@@ -53,6 +69,8 @@ class ProxyController(Controller):
         summary="Get Subject Info",
         description="Get Subject Info",
         path=ProxyURL.SUBJECT.value,
+        exclude_from_auth=True,
+        cache=True,
     )
     async def get_subject_info(self) -> Sequence[Subject]:
         return await ProxyQueryService.subjects()
@@ -63,6 +81,8 @@ class ProxyController(Controller):
         summary="Get Course Info",
         description="Get Course Info",
         path=ProxyURL.COURSE.value,
+        exclude_from_auth=True,
+        cache=True,
     )
     async def get_course_info(
         self,
@@ -88,4 +108,49 @@ class ProxyController(Controller):
             campus=campus,
             page_number=page_number,
             page_size=page_size,
+        )
+
+    @get(
+        operation_id="GetCourseDetail",
+        name="proxy:courseDetail",
+        summary="Get Course Detail",
+        description="Get Course Detail",
+        path=ProxyURL.COURSE_DETAIL.value,
+        exclude_from_auth=True,
+        return_dto=CourseDetailDTO,
+        cache=True,
+    )
+    async def get_course_detail(
+        self,
+        course_id: str,
+        course_offer_number: int,
+        term: int,
+        year: int = 2024,
+    ) -> CourseDetail:
+        return await ProxyQueryService.course_detail(
+            course_id=course_id, course_offer_number=course_offer_number, term=term, year=year
+        )
+
+    @get(
+        operation_id="GetCourseClassList",
+        name="proxy:courseClassList",
+        summary="Get Course ClassList",
+        description="Get Course ClassList",
+        path=ProxyURL.COURSE_CLASS_LIST.value,
+        exclude_from_auth=True,
+        return_dto=CourseClassListDTO,
+        cache=True,
+    )
+    async def get_course_class_list(
+        self,
+        course_id: str,
+        course_offer_number: int,
+        term: int,
+        session: int = 1,
+    ) -> Sequence[Group]:
+        return await ProxyQueryService.course_class_list(
+            course_id=course_id,
+            course_offer_number=course_offer_number,
+            term=term,
+            session=session,
         )
