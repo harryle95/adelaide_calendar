@@ -189,4 +189,4 @@ app-dev: create-certs												## Start the application in debug mode with SSL
 .PHONY: deploy
 deploy: create-certs
 	@echo "=>Running application in deployment with uvicorn"
-	@$(PDM) run uvicorn src.asgi.app:app --port 8080 --reload --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem
+	@$(PDM) run litestar run --host 0.0.0.0 --port 8080 --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem
