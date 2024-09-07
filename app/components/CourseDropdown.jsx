@@ -3,9 +3,7 @@ import { CourseContext } from "../Contexts/CourseContext";
 import axios from "axios";
 import { CacheContext } from "../Contexts/CacheContext";
 
-const CourseDropdown = (props) => {
-  const { searchedCourses } = props;
-
+const CourseDropdown = ({ searchedCourses }) => {
   const { cache, setCache } = useContext(CacheContext);
 
   const { selectedCourses, setSelectedCourses } = useContext(CourseContext);

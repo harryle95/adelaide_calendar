@@ -71,11 +71,7 @@ const SearchBox = () => {
           <AdvancedSearchDialog />
         </div>
       </div>
-      {inputValue ? (
-        <CourseDropdown searchedCourses={searchedCourses} />
-      ) : (
-        <></>
-      )}
+      {inputValue && <CourseDropdown searchedCourses={searchedCourses} />}
     </section>
   );
 };
