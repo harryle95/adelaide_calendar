@@ -52,15 +52,15 @@ const SearchBox = () => {
 
   return (
     <section className="flex flex-col w-1/5">
-      <div className="border border-black rounded-md py-1.5">
-        <div className="flex items-center ml-4 mb-1">
+      <div className="border border-black rounded-md py-2 pl-4">
+        <div className="flex items-center mb-1">
           <header className="mr-1 font-bold">Add courses</header>{" "}
           <HelpTooltip />
         </div>
-        <div className="relative flex ml-4">
+        <div className="relative flex">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-black" />
           {/* Implement loader here */}
-          <form action="">
+          <form>
             <input
               type="text"
               onChange={handleInputChange}

@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import moment from "moment";
 import { EventContext } from "../Contexts/EventContext";
+import { CourseContext } from "../Contexts/CourseContext";
 
 const ClassItem = ({
   parent_class_nbr,
@@ -9,13 +10,14 @@ const ClassItem = ({
   component,
   meetings,
   isGroupChecked,
-  setGroupChecked,
-  numChecked,
-  setNumChecked,
+  modifyGroupChecked,
+  numOfItemsChecked,
+  modifyNumOfItemsChecked,
 }) => {
   const [isChecked, setChecked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { modifyDisplayedEvents } = useContext(EventContext);
+  const { selectedCourses } = useContext(CourseContext);
 
   const dayDict = {
     Monday: "mo",
@@ -32,10 +34,10 @@ const ClassItem = ({
   }, [isGroupChecked]);
 
   useEffect(() => {
-    if (numChecked === 0) {
-      setGroupChecked(false);
+    if (numOfItemsChecked === 0) {
+      modifyGroupChecked(false);
     }
-  }, [numChecked]);
+  }, [numOfItemsChecked]);
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
@@ -46,16 +48,20 @@ const ClassItem = ({
 
     if (e.target.checked) {
       // modify the check state of parent component: ClassGroup
-      setGroupChecked(true);
-      setNumChecked((prevNumChecked) => prevNumChecked + 1);
-      console.log("added 1 numcheck", numChecked);
+      modifyGroupChecked(true);
+      modifyNumOfItemsChecked((prev) => prev + 1);
+      // modify the check state of parent component: ClassGroup
 
       meetings.forEach((meeting) => {
         const [startDate, endDate] = meeting.dates.split(" - ");
+
+        // create a newEvent object to add to calendar
         const newEvent = {
           id: class_nbr,
           groupId: parent_class_nbr,
-          title: `${section} ${component}`,
+          title: `${selectedCourses[parent_class_nbr].info.subject}
+          ${selectedCourses[parent_class_nbr].info.catalog_nbr}
+          ${section} ${class_nbr} ${component}`,
           rrule: {
             freq: "weekly",
             byweekday: dayDict[meeting.days],
@@ -73,31 +79,31 @@ const ClassItem = ({
     } else {
       // if unchecked, remove the corresponding event from the list
       modifyDisplayedEvents((prevEvents) =>
-        prevEvents.filter((event) => event.id !== class_nbr)
+        prevEvents.filter((prevEvent) => prevEvent.id !== class_nbr)
       );
       // modify the check state of parent component: ClassGroup
-      setNumChecked((prevNumChecked) => prevNumChecked - 1);
-      console.log("remove 1 numcheck", numChecked);
+      modifyNumOfItemsChecked((prev) => prev - 1);
     }
   };
+
   return (
-    <section>
-      <div className="flex space-x-4 items-center">
+    <section className="space-y-2">
+      <div className="flex items-center pl-6 bg-slate-200">
         <button onClick={handleOpen}>{isOpen ? "▲" : "▼"}</button>
-        <h1>Child class number: {class_nbr}</h1>
-        <input
+        <header className="ml-2">Child class number: {class_nbr}</header>
+        <input className="ml-auto"
           type="checkbox"
           checked={isChecked}
           onChange={handleCheckboxChange}
         />
       </div>
-      <div className={`${isOpen ? "block ml-7" : "hidden"}`}>
+      <div className={`${isOpen ? "block px-12 space-y-4" : "hidden"}`}>
         {meetings.map((meeting, index) => {
           return (
-            <h2 key={index}>
+            <p className="bg-slate-200" key={index}>
               {meeting.days} {meeting.start_time}-{meeting.end_time}{" "}
               {meeting.location} {meeting.dates}
-            </h2>
+            </p>
           );
         })}
       </div>

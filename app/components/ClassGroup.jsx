@@ -1,47 +1,58 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ClassItem from "./ClassItem";
+import { EventContext } from "../Contexts/EventContext";
 
 const ClassGroup = ({ parent_class_nbr, group }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isChecked, setChecked] = useState(false);
-  const [numChecked, setNumChecked] = useState(0);
+  const [isGroupChecked, setGroupChecked] = useState(false);
+  const [numOfItemsChecked, setNumOfItemsChecked] = useState(0);
+  const { modifyDisplayedEvents } = useContext(EventContext);
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
   };
 
   const handleCheckboxChange = (e) => {
-    setChecked(e.target.checked);
-    setNumChecked(0);
-  }
+    setGroupChecked(e.target.checked);
+    setNumOfItemsChecked(0);
+    modifyDisplayedEvents((prevEvents) =>
+      prevEvents.filter((prevEvent) => prevEvent.groupId !== parent_class_nbr)
+    );
+  };
+
+  const modifyGroupChecked = setGroupChecked;
+
+  const modifyNumOfItemsChecked = setNumOfItemsChecked;
 
   return (
-    <section>
-      <div className="flex space-x-4 items-center">
+    <section className="space-y-2 pl-6">
+      <div className="flex items-center bg-slate-200">
         <button onClick={handleOpen}>{isOpen ? "▲" : "▼"}</button>
-        <header> {group.type} </header>
+        <header className="ml-2 "> {group.type} </header>
         <input
+          className="ml-auto"
           type="checkbox"
-          checked={isChecked}
+          checked={isGroupChecked}
           onChange={handleCheckboxChange}
-          disabled={!isChecked}
+          disabled={!isGroupChecked}
         />
       </div>
-      <div className={`${isOpen ? "block ml-7" : "hidden"}`}>
+      <div className={`${isOpen ? "block space-y-2" : "hidden"}`}>
         {group.classes.map((eachClass, index) => {
           return (
-            <ClassItem
-              key={index}
-              parent_class_nbr={parent_class_nbr}
-              class_nbr={eachClass.class_nbr}
-              section={eachClass.section}
-              component={eachClass.component}
-              meetings={eachClass.meetings}
-              isGroupChecked={isChecked}
-              setGroupChecked={setChecked}
-              numChecked={numChecked}
-              setNumChecked={setNumChecked}
-            />
+            <div key={index}>
+              <ClassItem
+                parent_class_nbr={parent_class_nbr}
+                class_nbr={eachClass.class_nbr}
+                section={eachClass.section}
+                component={eachClass.component}
+                meetings={eachClass.meetings}
+                isGroupChecked={isGroupChecked}
+                modifyGroupChecked={modifyGroupChecked}
+                numOfItemsChecked={numOfItemsChecked}
+                modifyNumOfItemsChecked={modifyNumOfItemsChecked}
+              />
+            </div>
           );
         })}
       </div>

@@ -33,22 +33,20 @@ const CourseCard = (props) => {
   //   const cache = useRef({});
 
   return (
-    <section>
-      <div className="flex space-x-4 items-center">
+    <section className="border border-black rounded-md py-2 space-y-2">
+      <div className="flex items-center px-4 bg-slate-200">
         <button onClick={handleToggle}>{isOpen ? "▲" : "▼"}</button>
-        <header>
+        <header className="ml-2">
           {subject} {catalog_nbr} - {title} - Parent class number: {class_nbr}
         </header>
         <button
           onClick={handleClick}
-          className="border border-black rounded-md p-0.5"
+          className="border border-black rounded-md p-0.5 ml-auto"
         >
           <TrashIcon />
         </button>
       </div>
-      <div
-        className={`${isOpen ? "block ml-7" : "hidden"}`}
-      >
+      <div className={`${isOpen ? "block px-4 space-y-2" : "hidden"}`}>
         {groupList.map((group, index) => (
           <ClassGroup key={index} parent_class_nbr={class_nbr} group={group} />
         ))}
