@@ -21,7 +21,7 @@ const AdvancedSearchForm = () => {
   });
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
     setFormValues((prevValues) => ({
