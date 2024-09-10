@@ -23,7 +23,7 @@ const Calendar = () => {
   // }, [events]);
 
   return (
-    <div className="demo-app">
+    <div className="w-7/12 ml-auto border border-black rounded-md p-4">
       {/* <Sidebar
         weekendsVisible={weekendsVisible}
         handleWeekendsToggle={handleWeekendsToggle}
@@ -47,7 +47,7 @@ const Calendar = () => {
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
-          weekends={weekendsVisible}
+          weekends={!weekendsVisible}
           events={displayedEvents}
         />
       </div>

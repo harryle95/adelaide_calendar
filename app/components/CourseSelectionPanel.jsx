@@ -6,9 +6,9 @@ const CourseSelectionPanel = () => {
   const { selectedCourses } = useContext(CourseContext);
 
   return (
-    <div className="border border-black rounded-md px-4 space-y-2 py-2 w-1/2">
+    <div className="border border-black rounded-md px-4 space-y-2 py-2 w-2/5 max-h-80 overflow-y-scroll">
       <header className="font-bold">Selected Courses</header>
-      {Object.keys(selectedCourses).map((parentClassNbr, index) => {
+      {selectedCourses && Object.keys(selectedCourses).map((parentClassNbr, index) => {
         return (
           <CourseCard
             key={index}

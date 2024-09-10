@@ -51,7 +51,7 @@ const SearchBox = () => {
   };
 
   return (
-    <section className="flex flex-col w-1/5">
+    <section className="flex flex-col w-96">
       <div className="border border-black rounded-md py-2 pl-4">
         <div className="flex items-center mb-1">
           <header className="mr-1 font-bold">Add courses</header>{" "}
@@ -65,7 +65,7 @@ const SearchBox = () => {
               type="text"
               onChange={handleInputChange}
               placeholder="MATH3012..."
-              className="rounded-md border border-black py-1 pl-10 pr-4 focus:outline-none focus:ring-2"
+              className="w-80 rounded-md border border-black py-1 pl-10 pr-4 focus:outline-none focus:ring-2"
             />
           </form>
           <AdvancedSearchDialog />

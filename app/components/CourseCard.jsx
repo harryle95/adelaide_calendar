@@ -37,7 +37,7 @@ const CourseCard = (props) => {
       <div className="flex items-center px-4 bg-slate-200">
         <button onClick={handleToggle}>{isOpen ? "▲" : "▼"}</button>
         <header className="ml-2">
-          {subject} {catalog_nbr} - {title} - Parent class number: {class_nbr}
+          {subject} {catalog_nbr} - {title}
         </header>
         <button
           onClick={handleClick}
