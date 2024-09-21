@@ -1,0 +1,13 @@
+{
+  "python.REPL.enableREPLSmartSend": false,
+  "cSpell.words": [
+    "anext",
+    "asgi",
+    "Litestar",
+    "msgspec",
+    "saqlalchemy",
+    "signup",
+    "sqlalchemy"
+  ],
+  "makefile.configureOnOpen": false
+}
